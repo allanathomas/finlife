@@ -11,6 +11,7 @@ export class GameScene extends Phaser.Scene {
    */
   preload() {
     this.load.image("townBG", "/pictures/town.png")
+    this.load.image("nextButton", "/pictures/NEXT.png")
   }
 
   init(data) {
@@ -62,7 +63,8 @@ export class GameScene extends Phaser.Scene {
       "Your salary is used to pay for expenses."
     ])
 
-    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
+    this.add.image(400, 400, "nextButton")
+      .setScale(0.2)
       .setInteractive()
       .on("pointerdown", () => {
       this.scene.start("GroceryScene")
@@ -102,12 +104,9 @@ export class GameScene extends Phaser.Scene {
       wordWrap: { width: 860 },
     })
 
-    this.nextButton = this.add.text(centerX + 360, centerY + 60, "NEXT", {
-      fontSize: "22px",
-      color: "#ffffff",
-      backgroundColor: "#2e86de",
-      padding: { x: 10, y: 6 },
-    }).setInteractive()
+    this.nextButton = this.add.image(centerX + 360, centerY + 60, "nextButton")
+      .setScale(0.2)
+      .setInteractive()
 
     this.nextButton.on("pointerdown", () => {
       this.nextDialogue()
