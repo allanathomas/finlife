@@ -1,4 +1,5 @@
 import Phaser from "phaser"
+import { gameState } from "../GameState.js"
 
 // Adjust frameWidth, frameHeight, and end frame to match your spritesheet layout
 const FRAME_WIDTH = 32
@@ -88,6 +89,7 @@ export class CharacterSelect extends Phaser.Scene {
     nextButton.setInteractive({ useHandCursor: true })
     nextButton.on("pointerdown", () => {
       if (this.selectedCharacter) {
+        gameState.character.type = this.selectedCharacter  // Save to gameState
         this.scene.start("GameScene", { character: this.selectedCharacter })
       }
     })
