@@ -52,8 +52,10 @@ export class GroceryScene extends Phaser.Scene {
       { key: "soda", name: "Soda", price: 3 },
     ]
 
-    // Grocery list
-    this.groceryList = this.generateGroceryList(this.items)
+    // Grocery list - use gameState to persist across scene visits
+    if (gameState.currentGroceryList.length === 0) {
+      gameState.currentGroceryList = this.generateGroceryList(this.items)
+    }
     this.drawGroceryList()
 
     // Shelf layout
@@ -87,13 +89,13 @@ export class GroceryScene extends Phaser.Scene {
     this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
       .setInteractive()
       .on("pointerdown", () => {
-      this.scene.start("DepartmentStore Scene")
+      this.scene.start("DepartmentStoreScene")
     })
   }
 
   // BUY ITEM FUNCTION
   buyItem(item, icon) {
-    const index = this.groceryList.findIndex(i => i.key === item.key)
+    const index = gameState.currentGroceryList.findIndex(i => i.key === item.key)
     if (index === -1) return
 
     if (gameState.bank < item.price) return
@@ -101,8 +103,23 @@ export class GroceryScene extends Phaser.Scene {
     gameState.bank -= item.price
     this.bankText.setText(`Bank: $${gameState.bank}`)
 
-    this.groceryList.splice(index, 1)
+    // Add to inventory
+    gameState.addToInventory(item)
+
+    // Remove from grocery list
+    gameState.currentGroceryList.splice(index, 1)
     this.drawGroceryList()
+
+    // Update health/happiness based on item type
+    if (item.key === "dogfood") {
+      gameState.updateStat("pet", "health", 10)
+      gameState.updateStat("pet", "happiness", 5)
+    } else if (gameState.isNeed(item.key)) {
+      gameState.updateStat("character", "health", 5)
+    } else if (gameState.isWant(item.key)) {
+      gameState.updateStat("character", "happiness", 10)
+      gameState.updateStat("character", "health", -3)  // Unhealthy treats
+    }
 
     icon.setAlpha(0.4)
     icon.disableInteractive()
@@ -129,9 +146,9 @@ export class GroceryScene extends Phaser.Scene {
       }).setOrigin(1, 0)
     )
 
-    this.groceryList.forEach((item, index) => {
-      const isNeed = this.items.findIndex(i => i.key === item.key) < 8
-      const color = isNeed ? "#ff0000" : "#b000ff"
+    gameState.currentGroceryList.forEach((item, index) => {
+      // Use gameState helper to check need vs want
+      const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
 
       this.groceryTexts.push(
         this.add.text(

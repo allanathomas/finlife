@@ -1,4 +1,5 @@
 import Phaser from "phaser"
+import { gameState } from "../GameState.js"
 
 export class GameScene extends Phaser.Scene {
   constructor() {
@@ -10,14 +11,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // UI
-    this.bankAmount = 0
-    this.salary = 2000
-    this.pet = "Dog"
-    this.health = 100
-    this.happiness = 100
-
-    this.scene.launch("BankScene", { bankAmount: 2000 })
+    // UI - use gameState
+    this.scene.launch("BankScene")
 
     this.healthBar = this.add.graphics()
     this.happinessBar = this.add.graphics()
@@ -60,14 +55,14 @@ export class GameScene extends Phaser.Scene {
     this.healthBar.fillRect(20, 110, 200, 20)
 
     this.healthBar.fillStyle(0xff0000)
-    this.healthBar.fillRect(20, 110, 2 * this.health, 20)
+    this.healthBar.fillRect(20, 110, 2 * gameState.character.health, 20)
 
     this.happinessBar.clear()
     this.happinessBar.fillStyle(0x555555)
     this.happinessBar.fillRect(20, 140, 200, 20)
 
     this.happinessBar.fillStyle(0xffff00)
-    this.happinessBar.fillRect(20, 140, 2 * this.happiness, 20)
+    this.happinessBar.fillRect(20, 140, 2 * gameState.character.happiness, 20)
   }
 
 
