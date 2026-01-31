@@ -6,10 +6,8 @@ export class GroceryScene extends Phaser.Scene {
   }
 
   preload() {
-    // Background
     this.load.image("shelf", "resources/grocery shelf.png")
 
-    // Items
     this.load.image("soup", "Icons/canned_soup.png")
     this.load.image("cheese", "Icons/cheese_mozzarella.png")
     this.load.image("eggs", "Icons/eggs_brown.png")
@@ -25,56 +23,112 @@ export class GroceryScene extends Phaser.Scene {
   }
 
   create() {
-    const centerX = this.cameras.main.centerX
-    const centerY = this.cameras.main.centerY
+    const { centerX, centerY } = this.cameras.main
+
+    // 💰 INITIAL BANK AMOUNT
+    this.bankAmount = 2000
+    this.scene.get("BankScene")?.updateBank(this.bankAmount)
 
     // Background
     const bg = this.add.image(centerX, centerY, "shelf")
-    bg.setOrigin(0.5)
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
-    // Items data
-    const items = [
-      { key: "soup", price: 5 },
-      { key: "cheese", price: 7 },
-      { key: "eggs", price: 4 },
-      { key: "apple", price: 2 },
-      { key: "bread", price: 6 },
-      { key: "carrot", price: 3 },
-      { key: "potato", price: 4 },
-      { key: "milk", price: 3 },
-      { key: "cake", price: 10 },
-      { key: "boba", price: 12 },
-      { key: "icecream", price: 9 },
-      { key: "soda", price: 3 },
+    // Store items
+    this.items = [
+      { key: "soup", name: "Soup", price: 5 },
+      { key: "cheese", name: "Cheese", price: 7 },
+      { key: "eggs", name: "Eggs", price: 4 },
+      { key: "apple", name: "Apple", price: 2 },
+      { key: "bread", name: "Bread", price: 6 },
+      { key: "carrot", name: "Carrot", price: 3 },
+      { key: "potato", name: "Potato", price: 4 },
+      { key: "milk", name: "Milk", price: 3 },
+      { key: "cake", name: "Cake", price: 10 },
+      { key: "boba", name: "Boba", price: 12 },
+      { key: "icecream", name: "Ice Cream", price: 9 },
+      { key: "soda", name: "Soda", price: 3 },
     ]
 
-const startX = 200
-const startY = 140
-const gapX = 270
-const gapY = 260
+    // 📝 SAVE grocery list on scene
+    this.groceryList = this.generateGroceryList(this.items)
+    this.drawGroceryList()
 
-const itemsPerRow = 4
+    // Shelf layout
+    const startX = 200
+    const startY = 140
+    const gapX = 270
+    const gapY = 260
+    const itemsPerRow = 4
 
-items.forEach((item, index) => {
-  const col = index % itemsPerRow
-  const row = Math.floor(index / itemsPerRow)
+    this.items.forEach((item, index) => {
+      const col = index % itemsPerRow
+      const row = Math.floor(index / itemsPerRow)
 
-  const x = startX + col * gapX
-  const y = startY + row * gapY
+      const x = startX + col * gapX
+      const y = startY + row * gapY
 
-  // Item icon
-  const icon = this.add.image(x, y, item.key)
-    .setInteractive({ useHandCursor: true })
-    .setScale(5.5)
+      const icon = this.add.image(x, y, item.key)
+        .setScale(3)
+        .setInteractive({ useHandCursor: true })
 
-  // Price text
-  this.add.text(x, y + 70, `$${item.price}`, {
-    fontSize: "22px",
-    color: "#ffffff",
-  }).setOrigin(0.5)
+      this.add.text(x, y + 70, `$${item.price}`, {
+        fontSize: "22px",
+        color: "#ffffff",
+      }).setOrigin(0.5)
 
-  icon.on("pointerdown", () => {
-    console.log(`Bought ${item.key} for $${item.price}`)
-  })
-})}}
+      icon.on("pointerdown", () => this.buyItem(item, icon))
+    })
+  }
+
+  buyItem(item, icon) {
+    const index = this.groceryList.findIndex(i => i.key === item.key)
+    if (index === -1) return
+
+    if (this.bankAmount < item.price) return
+
+    this.bankAmount -= item.price
+    this.scene.get("BankScene")?.updateBank(this.bankAmount)
+
+    this.groceryList.splice(index, 1)
+    this.drawGroceryList()
+
+    icon.setAlpha(0.4)
+    icon.disableInteractive()
+  }
+
+  generateGroceryList(items) {
+    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 6)
+  }
+
+  drawGroceryList() {
+    if (this.groceryTexts) {
+      this.groceryTexts.forEach(t => t.destroy())
+    }
+    this.groceryTexts = []
+
+    const x = this.cameras.main.width - 20
+    const y = 20
+
+    this.groceryTexts.push(
+      this.add.text(x, y, "Grocery List", {
+        fontSize: "24px",
+        color: "#000000",
+        backgroundColor: "#ffffff"
+      }).setOrigin(1, 0)
+    )
+
+    this.groceryList.forEach((item, index) => {
+      const isNeed = this.items.findIndex(i => i.key === item.key) < 8
+      const color = isNeed ? "#ff0000" : "#b000ff"
+
+      this.groceryTexts.push(
+        this.add.text(
+          x,
+          y + 40 + index * 30,
+          `${item.name} - $${item.price}`,
+          { fontSize: "20px", color, backgroundColor: "#ffffff" }
+        ).setOrigin(1, 0)
+      )
+    })
+  }
+}
