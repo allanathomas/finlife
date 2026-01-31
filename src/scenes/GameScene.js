@@ -6,13 +6,33 @@ export class GameScene extends Phaser.Scene {
     super("GameScene")
   }
 
+  /**
+   * Load the assets (images, sounds, etc.)
+   */
+  preload() {
+    this.load.image("townBG", "/pictures/town.png")
+  }
+
   init(data) {
     this.character = data.character || "A"
   }
 
   create() {
-    // UI - use gameState
+    // Add background image
+    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'townBG')
+      .setOrigin(0.5)
+      .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+      .setAlpha(0.7)
     this.scene.launch("BankScene")
+
+    // UI
+    this.bankAmount = 0
+    this.salary = 2000
+    this.pet = "Dog"
+    this.health = 100
+    this.happiness = 100
+
+    this.scene.launch("BankScene", { bankAmount: 2000 })
 
     this.healthBar = this.add.graphics()
     this.happinessBar = this.add.graphics()
