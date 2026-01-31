@@ -35,7 +35,7 @@ export class GroceryScene extends Phaser.Scene {
 
     // Store items
     this.items = [
-      { key: "soup", name: "Soup", price: 5 },
+      { key: "dogfood", name: "Dog Food", price: 5 },
       { key: "cheese", name: "Cheese", price: 7 },
       { key: "eggs", name: "Eggs", price: 4 },
       { key: "apple", name: "Apple", price: 2 },
