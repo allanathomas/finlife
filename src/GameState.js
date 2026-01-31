@@ -21,23 +21,28 @@ export const gameState = {
 
   // Current shopping list (generated per scene visit)
   currentGroceryList: [],
-  currentDeptList: [],
 
   // Inventory of purchased items
   inventory: [],
 
-  // Define what counts as NEEDS vs WANTS
-  needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk", "bandages", "batteries", "lotion", "pan", "detergent", "sanitizer", "soap", "bulb", "toiletpaper"],
-  wantItems: ["cake", "boba", "icecream", "soda", "ducktopus", "pencilcase", "duck"],
+  // Define what counts as NEEDS vs WANTS (grocery)
+  needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk"],
+  wantItems: ["cake", "boba", "icecream", "soda"],
+
+  // Department store list and need/want items
+  currentDeptList: [],
+  deptNeedItems: ["bandages", "soap", "sanitizer", "detergent", "toiletpaper", "bulb", "batteries", "pan"],
+  deptWantItems: ["lotion", "ducktopus", "pencilcase", "duck"],
 
   // Track completed tasks/objectives
   completedTasks: [],
 
   // Bills/expenses that must be paid
-  bills: [
-    { name: "Rent", amount: 500, due: false },
-    { name: "Utilities", amount: 100, due: false },
-  ],
+  
+  // bills: [
+  //   { name: "Rent", amount: 500, due: false },
+  //   { name: "Utilities", amount: 100, due: false },
+  // ],
 
   // ===== HELPER METHODS =====
 
@@ -47,6 +52,14 @@ export const gameState = {
 
   isWant(itemKey) {
     return this.wantItems.includes(itemKey)
+  },
+
+  isDeptNeed(itemKey) {
+    return this.deptNeedItems.includes(itemKey)
+  },
+
+  isDeptWant(itemKey) {
+    return this.deptWantItems.includes(itemKey)
   },
 
   addToInventory(item) {
@@ -71,7 +84,8 @@ export const gameState = {
     this.bank = 2000
     this.inventory = []
     this.currentGroceryList = []
+    this.currentDeptList = []
     this.completedTasks = []
-    this.bills.forEach(b => b.due = false)
+    if (this.bills) this.bills.forEach(b => b.due = false)
   },
 }
