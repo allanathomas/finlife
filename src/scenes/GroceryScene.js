@@ -121,36 +121,156 @@ export class GroceryScene extends Phaser.Scene {
 
   // BUY ITEM FUNCTION
   buyItem(item, icon) {
-    const index = gameState.currentGroceryList.findIndex(i => i.key === item.key)
-    if (index === -1) return
+    const index = gameState.currentGroceryList.findIndex(i => i.key === item.key);
+    // If not on grocery list, ask for confirmation
+    if (index === -1) {
+      if (gameState.bank < item.price) {
+        this.showDialogue([`Not enough money to buy ${item.name}.`]);
+        return;
+      }
+      const left = gameState.bank - item.price;
+      this.showConfirmDialogue(
+        [`${item.name} is not on your grocery list.`,
+         `Do you really want to buy it for $${item.price}?`,
+         `You will have $${left} left in your bank.`],
+        () => {
+          // Yes: proceed with purchase
+          gameState.bank -= item.price;
+          this.bankText.setText(`Bank: $${gameState.bank}`);
+          gameState.addToInventory(item);
+          // Update health/happiness for wants
+          if (gameState.isWant(item.key)) {
+            gameState.updateStat("character", "happiness", 10);
+            gameState.updateStat("character", "health", -3);
+          }
+          this.characterDisplay.updateBars();
+          icon.setAlpha(0.4);
+          icon.disableInteractive();
+        }
+      );
+      return;
+    }
 
-    if (gameState.bank < item.price) return
+    if (gameState.bank < item.price) {
+      this.showDialogue([`Not enough money to buy ${item.name}.`]);
+      return;
+    }
 
-    gameState.bank -= item.price
-    this.bankText.setText(`Bank: $${gameState.bank}`)
+    gameState.bank -= item.price;
+    this.bankText.setText(`Bank: $${gameState.bank}`);
 
     // Add to inventory
-    gameState.addToInventory(item)
+    gameState.addToInventory(item);
 
     // Remove from grocery list
-    gameState.currentGroceryList.splice(index, 1)
-    this.drawGroceryList()
+    gameState.currentGroceryList.splice(index, 1);
+    this.drawGroceryList();
 
     // Update health/happiness based on item type
     if (item.key === "dogfood") {
-      gameState.updateStat("pet", "health", 10)
-      gameState.updateStat("pet", "happiness", 5)
+      gameState.updateStat("pet", "health", 10);
+      gameState.updateStat("pet", "happiness", 5);
     } else if (gameState.isNeed(item.key)) {
-      gameState.updateStat("character", "health", 5)
+      gameState.updateStat("character", "health", 5);
     } else if (gameState.isWant(item.key)) {
-      gameState.updateStat("character", "happiness", 10)
-      gameState.updateStat("character", "health", -3)  // Unhealthy treats
+      gameState.updateStat("character", "happiness", 10);
+      gameState.updateStat("character", "health", -3);  // Unhealthy treats
     }
 
-    this.characterDisplay.updateBars()
+    this.characterDisplay.updateBars();
 
-    icon.setAlpha(0.4)
-    icon.disableInteractive()
+    icon.setAlpha(0.4);
+    icon.disableInteractive();
+  }
+
+  // Confirmation dialogue with Yes/No
+  showConfirmDialogue(messages, onYes) {
+    this.dialogueMessages = messages;
+    this.dialogueIndex = 0;
+
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.height - 180;
+
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
+    this.dialogueBox.setStrokeStyle(2, 0xffffff);
+
+    this.dialogueText = this.add.text(centerX - 430, centerY - 70, "", {
+      fontSize: "24px",
+      color: "#ffffff",
+      wordWrap: { width: 860 },
+    });
+
+    // Yes/No buttons
+    this.yesButton = this.add.text(centerX + 200, centerY + 60, "Yes", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#228B22"
+    }).setInteractive();
+    this.noButton = this.add.text(centerX + 300, centerY + 60, "No", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#B22222"
+    }).setInteractive();
+
+    this.yesButton.on("pointerdown", () => {
+      this.dialogueBox.destroy();
+      this.dialogueText.destroy();
+      this.yesButton.destroy();
+      this.noButton.destroy();
+      onYes();
+    });
+    this.noButton.on("pointerdown", () => {
+      this.dialogueBox.destroy();
+      this.dialogueText.destroy();
+      this.yesButton.destroy();
+      this.noButton.destroy();
+    });
+
+    this.dialogueText.setText(this.dialogueMessages.join("\n"));
+  }
+
+  // Dialogue popup similar to GameScene
+  showDialogue(messages) {
+    this.dialogueMessages = messages;
+    this.dialogueIndex = 0;
+
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.height - 180;
+
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
+    this.dialogueBox.setStrokeStyle(2, 0xffffff);
+
+    this.dialogueText = this.add.text(centerX - 430, centerY - 70, "", {
+      fontSize: "24px",
+      color: "#ffffff",
+      wordWrap: { width: 860 },
+    });
+
+    this.nextButton = this.add.text(centerX + 360, centerY + 60, "Next", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#333"
+    }).setInteractive();
+
+    this.nextButton.on("pointerdown", () => {
+      this.nextDialogue();
+    });
+
+    this.nextDialogue();
+  }
+
+  nextDialogue() {
+    if (!this.dialogueMessages) return;
+
+    if (this.dialogueIndex >= this.dialogueMessages.length) {
+      this.dialogueBox.destroy();
+      this.dialogueText.destroy();
+      this.nextButton.destroy();
+      return;
+    }
+
+    this.dialogueText.setText(this.dialogueMessages[this.dialogueIndex]);
+    this.dialogueIndex++;
   }
 
   generateGroceryList(items) {
