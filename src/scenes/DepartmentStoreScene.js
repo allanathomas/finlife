@@ -38,18 +38,18 @@ export class DepartmentStoreScene extends Phaser.Scene {
 
     // Store items
     this.items = [
-      { key: "bandages", name: "Bandages", price: 5 },
-      { key: "batteries", name: "Batteries", price: 7 },
-      { key: "lotion", name: "Lotion", price: 4 },
-      { key: "pan", name: "Frying Pan", price: 2 },
-      { key: "detergent", name: "Detergent", price: 6 },
-      { key: "sanitizer", name: "Hand Sanitizer", price: 3 },
-      { key: "soap", name: "Soap", price: 4 },
-      { key: "bulb", name: "Light Bulb", price: 3 },
-      { key: "toiletpaper", name: "Toilet Paper", price: 10 },
-      { key: "ducktopus", name: "Ducktopus", price: 12 },
-      { key: "pencilcase", name: "Pencil Case", price: 9 },
-      { key: "duck", name: "Rubber Duck", price: 3 },
+      { key: "bandages", name: "Bandages", price: 7 },
+      { key: "batteries", name: "Batteries", price: 12 },
+      { key: "lotion", name: "Lotion", price: 8 },
+      { key: "pan", name: "Frying Pan", price: 25 },
+      { key: "detergent", name: "Detergent", price: 11 },
+      { key: "sanitizer", name: "Hand Sanitizer", price: 2 },
+      { key: "soap", name: "Soap", price: 3 },
+      { key: "bulb", name: "Light Bulb", price: 6 },
+      { key: "toiletpaper", name: "Toilet Paper", price: 4 },
+      { key: "ducktopus", name: "Ducktopus", price: 15 },
+      { key: "pencilcase", name: "Pencil Case", price: 13 },
+      { key: "duck", name: "Rubber Duck", price: 12 },
     ]
 
     if (gameState.currentDeptList.length === 0) {
