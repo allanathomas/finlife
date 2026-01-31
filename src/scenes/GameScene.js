@@ -5,11 +5,24 @@ export class GameScene extends Phaser.Scene {
     super("GameScene")
   }
 
+  /**
+   * Load the assets (images, sounds, etc.)
+   */
+  preload() {
+    this.load.image("townBG", "/pictures/town.png")
+  }
+
   init(data) {
     this.character = data.character || "A"
   }
 
   create() {
+    // Add background image
+    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'townBG')
+      .setOrigin(0.5)
+      .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+      .setAlpha(0.7)
+
     // UI
     this.bankAmount = 0
     this.salary = 2000
