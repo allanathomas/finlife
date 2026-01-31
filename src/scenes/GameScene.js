@@ -17,23 +17,21 @@ export class GameScene extends Phaser.Scene {
     this.health = 100
     this.happiness = 100
 
-    this.bankText = this.add.text(20, 50, `Bank: $${this.bankAmount}`, { fontSize: "22px", color: "#ffffff" })
-    this.salaryText = this.add.text(20, 80, `Salary: $${this.salary} / month`, { fontSize: "22px", color: "#ffffff" })
-    this.petText = this.add.text(20, 150, `Pet: ${this.pet}`, { fontSize: "22px", color: "#ffffff" })
+    this.scene.launch("BankScene", { bankAmount: 2000 })
 
     this.healthBar = this.add.graphics()
     this.happinessBar = this.add.graphics()
     this.drawBars()
 
     // Salary event
-    this.time.addEvent({
-      delay: 2000,
-      loop: true,
-      callback: () => {
-        this.bankAmount += this.salary
-        this.bankText.setText(`Bank: $${this.bankAmount}`)
-      }
-    })
+    // this.time.addEvent({
+    //   delay: 2000,
+    //   loop: true,
+    //   callback: () => {
+    //     this.bankAmount += this.salary
+    //     this.bankText.setText(`Bank: $${this.bankAmount}`)
+    //   }
+    // })
 
     // Dialogue queue
     this.showDialogue([
@@ -48,6 +46,12 @@ export class GameScene extends Phaser.Scene {
       "A salary is money you get from working a job.",
       "Your salary is used to pay for expenses."
     ])
+
+    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
+      .setInteractive()
+      .on("pointerdown", () => {
+      this.scene.start("GroceryScene")
+    })
   }
 
   drawBars() {
