@@ -83,7 +83,7 @@ export class CharacterSelect extends Phaser.Scene {
     // Next button - centered, below characters (position proportional to CHARACTER_SIZE)
     this.selectedCharacter = null
     const nextButtonY = centerY + CHARACTER_SIZE / 2 + 80
-    const nextButton = this.add.image(centerX, nextButtonY, "startButton").setOrigin(0.5).setScale(0.25)
+    const nextButton = this.add.image(centerX, nextButtonY, "startButton").setOrigin(0.5).setScale(0.5)
 
     nextButton.setInteractive({ useHandCursor: true })
     nextButton.on("pointerdown", () => {
