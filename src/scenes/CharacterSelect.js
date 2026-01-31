@@ -17,6 +17,9 @@ export class CharacterSelect extends Phaser.Scene {
    * Load the assets (images, sounds, etc.)
    */
   preload() {
+    this.load.image("charSelBG", "/pictures/charSelBG.png")
+    this.load.image("chooseChar", "/pictures/chooseChar.png")
+    this.load.image("startButton", "/pictures/START.png")
     this.load.spritesheet("girl", "/resources/girlchar.png", {
       frameWidth: FRAME_WIDTH,
       frameHeight: FRAME_HEIGHT,
@@ -31,6 +34,12 @@ export class CharacterSelect extends Phaser.Scene {
    * Create the scene (add sprites, buttons, etc.)
    */
   create() {
+    // Add background image
+    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'charSelBG')
+      .setOrigin(0.5)
+      .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+      .setAlpha(0.7)
+
     // Girl animation
     this.anims.create({
       key: "girlIdle",
@@ -51,10 +60,7 @@ export class CharacterSelect extends Phaser.Scene {
     const screenWidth = this.cameras.main.width
     const screenHeight = this.cameras.main.height
 
-    this.add.text(centerX, centerY - 200, "Choose your character", {
-      fontSize: "32px",
-      color: "#ffffff",
-    }).setOrigin(0.5)
+    this.add.image(centerX, centerY - 250, "chooseChar").setOrigin(0.5)
 
     // Character A - Girl (left) - click to select
     const girlSprite = this.add.sprite(centerX - 180, centerY, "girl")
@@ -77,12 +83,7 @@ export class CharacterSelect extends Phaser.Scene {
     // Next button - centered, below characters (position proportional to CHARACTER_SIZE)
     this.selectedCharacter = null
     const nextButtonY = centerY + CHARACTER_SIZE / 2 + 80
-    const nextButton = this.add.text(centerX, nextButtonY, "Next", {
-      fontSize: "32px",
-      color: "#ffffff",
-      backgroundColor: "#2196f3",
-      padding: { x: 24, y: 12 },
-    }).setOrigin(0.5)
+    const nextButton = this.add.image(centerX, nextButtonY, "startButton").setOrigin(0.5).setScale(0.25)
 
     nextButton.setInteractive({ useHandCursor: true })
     nextButton.on("pointerdown", () => {
