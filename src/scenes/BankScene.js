@@ -6,10 +6,21 @@ export class BankScene extends Phaser.Scene {
     super("BankScene")
   }
 
+  /**
+   * Load the assets (images, sounds, etc.)
+   */
+  preload() {
+    this.load.image("userFrame", "/pictures/userFr.png")
+  }
+
   create() {
-    this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
+    // Add picture as base layer
+    this.add.image(0, 0, "userFrame").setOrigin(0, 0).setScale(0.7, 0.25)
+
+    this.bankText = this.add.text(30, 22, `Bank: $${gameState.bank}`, {
       fontSize: "24px",
-      color: "#ffffff",
+      fontWeight: "bold",
+      color: "#0a0a0a",
     })
     this.bankText.setScrollFactor(0)
   }
