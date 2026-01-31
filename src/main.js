@@ -6,6 +6,7 @@ import { ClinicScene } from "./scenes/ClinicScene.js"
 import { DepartmentStoreScene } from "./scenes/DepartmentStoreScene.js"
 import { HomeScene } from "./scenes/HomeScene.js"
 import { GroceryScene } from "./scenes/GroceryScene.js"
+import { BankScene } from "./scenes/BankScene.js"
 
 const config = {
   type: Phaser.AUTO,
@@ -17,7 +18,7 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   backgroundColor: "#1d1d1d",
-  scene: [MainMenu, CharacterSelect, GameScene, ClinicScene, DepartmentStoreScene, HomeScene, GroceryScene],
+  scene: [MainMenu, CharacterSelect, GameScene, GroceryScene, ClinicScene, DepartmentStoreScene, HomeScene, BankScene],
 }
 
 new Phaser.Game(config)
