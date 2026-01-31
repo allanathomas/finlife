@@ -8,7 +8,7 @@ export class GroceryScene extends Phaser.Scene {
   preload() {
     this.load.image("shelf", "resources/grocery shelf.png")
 
-    this.load.image("soup", "Icons/canned_soup.png")
+    this.load.image("dogfood", "Icons/canned_soup.png")
     this.load.image("cheese", "Icons/cheese_mozzarella.png")
     this.load.image("eggs", "Icons/eggs_brown.png")
     this.load.image("apple", "Icons/fruit_apple.png")
