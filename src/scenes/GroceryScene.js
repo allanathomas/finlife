@@ -1,4 +1,5 @@
 import Phaser from "phaser"
+import { gameState } from "../GameState.js"
 
 export class GroceryScene extends Phaser.Scene {
   constructor() {
@@ -25,9 +26,11 @@ export class GroceryScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main
 
-    // 💰 INITIAL BANK AMOUNT
-    this.bankAmount = 2000
-    this.scene.get("BankScene")?.updateBank(this.bankAmount)
+    // BANK TEXT (always visible)
+    this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
+      fontSize: "22px",
+      color: "#ffffff",
+    })
 
     // Background
     const bg = this.add.image(centerX, centerY, "shelf")
@@ -49,7 +52,7 @@ export class GroceryScene extends Phaser.Scene {
       { key: "soda", name: "Soda", price: 3 },
     ]
 
-    // 📝 SAVE grocery list on scene
+    // Grocery list
     this.groceryList = this.generateGroceryList(this.items)
     this.drawGroceryList()
 
@@ -76,18 +79,21 @@ export class GroceryScene extends Phaser.Scene {
         color: "#ffffff",
       }).setOrigin(0.5)
 
-      icon.on("pointerdown", () => this.buyItem(item, icon))
+      icon.on("pointerdown", () => {
+        this.buyItem(item, icon)
+      })
     })
   }
 
+  // BUY ITEM FUNCTION
   buyItem(item, icon) {
     const index = this.groceryList.findIndex(i => i.key === item.key)
     if (index === -1) return
 
-    if (this.bankAmount < item.price) return
+    if (gameState.bank < item.price) return
 
-    this.bankAmount -= item.price
-    this.scene.get("BankScene")?.updateBank(this.bankAmount)
+    gameState.bank -= item.price
+    this.bankText.setText(`Bank: $${gameState.bank}`)
 
     this.groceryList.splice(index, 1)
     this.drawGroceryList()
