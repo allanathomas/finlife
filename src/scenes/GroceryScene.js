@@ -83,6 +83,12 @@ export class GroceryScene extends Phaser.Scene {
         this.buyItem(item, icon)
       })
     })
+
+    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
+      .setInteractive()
+      .on("pointerdown", () => {
+      this.scene.start("DepartmentStore Scene")
+    })
   }
 
   // BUY ITEM FUNCTION
