@@ -48,7 +48,7 @@ export class CharacterSelect extends Phaser.Scene {
     girlSprite.play("girlIdle")
     girlSprite.setInteractive({ useHandCursor: true })
     girlSprite.on("pointerdown", () => {
-      this.selectCharacter(girlSprite, boySprite, "A")
+      this.selectCharacter(girlSprite, "A")
     })
 
     // Character B - Boy (right) - click to select
@@ -57,14 +57,35 @@ export class CharacterSelect extends Phaser.Scene {
     boySprite.play("boyIdle")
     boySprite.setInteractive({ useHandCursor: true })
     boySprite.on("pointerdown", () => {
-      this.selectCharacter(girlSprite, boySprite, "B")
+      this.selectCharacter(boySprite, "B")
+    })
+
+    // Next button - bottom right
+    this.selectedCharacter = null
+    const nextX = this.cameras.main.width - 100
+    const nextY = this.cameras.main.height - 80
+    const nextButton = this.add.text(nextX, nextY, "Next", {
+      fontSize: "32px",
+      color: "#ffffff",
+      backgroundColor: "#2196f3",
+      padding: { x: 24, y: 12 },
+    }).setOrigin(0.5)
+
+    nextButton.setInteractive({ useHandCursor: true })
+    nextButton.on("pointerdown", () => {
+      if (this.selectedCharacter) {
+        this.scene.start("GameScene", { character: this.selectedCharacter })
+      }
     })
   }
 
-  selectCharacter(selectedSprite, otherSprite, character) {
-    // Disable further clicks
-    selectedSprite.removeInteractive()
-    otherSprite.removeInteractive()
+  selectCharacter(selectedSprite, character) {
+    this.selectedCharacter = character
+
+    // Clear previous highlight
+    if (this.selectionHighlight) {
+      this.selectionHighlight.destroy()
+    }
 
     // Draw highlight frame around selected character
     const pad = 8
@@ -73,14 +94,9 @@ export class CharacterSelect extends Phaser.Scene {
     const x = selectedSprite.x - w / 2
     const y = selectedSprite.y - h / 2
 
-    const highlight = this.add.graphics()
-    highlight.lineStyle(4, 0x4caf50)
-    highlight.strokeRect(x, y, w, h)
-    highlight.setDepth(10)
-
-    // Brief delay to show selection, then start game
-    this.time.delayedCall(400, () => {
-      this.scene.start("GameScene", { character })
-    })
+    this.selectionHighlight = this.add.graphics()
+    this.selectionHighlight.lineStyle(4, 0x4caf50)
+    this.selectionHighlight.strokeRect(x, y, w, h)
+    this.selectionHighlight.setDepth(10)
   }
 }
