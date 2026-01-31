@@ -5,6 +5,9 @@ const FRAME_WIDTH = 32
 const FRAME_HEIGHT = 32
 const FRAME_COUNT = 4 // frames 0-3 (adjust if your spritesheet has more/fewer)
 
+// Character display size on screen
+const CHARACTER_SIZE = 200
+
 export class CharacterSelect extends Phaser.Scene {
   constructor() {
     super("CharacterSelect")
@@ -43,14 +46,19 @@ export class CharacterSelect extends Phaser.Scene {
       repeat: -1,
     })
 
-    this.add.text(400, 50, "Choose your character", {
+    const centerX = this.cameras.main.centerX
+    const centerY = this.cameras.main.centerY
+    const screenWidth = this.cameras.main.width
+    const screenHeight = this.cameras.main.height
+
+    this.add.text(centerX, centerY - 200, "Choose your character", {
       fontSize: "32px",
       color: "#ffffff",
     }).setOrigin(0.5)
 
     // Character A - Girl (left) - click to select
-    const girlSprite = this.add.sprite(250, 180, "girl")
-    girlSprite.setDisplaySize(120, 120)
+    const girlSprite = this.add.sprite(centerX - 180, centerY, "girl")
+    girlSprite.setDisplaySize(CHARACTER_SIZE, CHARACTER_SIZE)
     girlSprite.play("girlIdle")
     girlSprite.setInteractive({ useHandCursor: true })
     girlSprite.on("pointerdown", () => {
@@ -58,19 +66,18 @@ export class CharacterSelect extends Phaser.Scene {
     })
 
     // Character B - Boy (right) - click to select
-    const boySprite = this.add.sprite(550, 180, "boy")
-    boySprite.setDisplaySize(120, 120)
+    const boySprite = this.add.sprite(centerX + 180, centerY, "boy")
+    boySprite.setDisplaySize(CHARACTER_SIZE, CHARACTER_SIZE)
     boySprite.play("boyIdle")
     boySprite.setInteractive({ useHandCursor: true })
     boySprite.on("pointerdown", () => {
       this.selectCharacter(boySprite, "B")
     })
 
-    // Next button - bottom right
+    // Next button - centered, below characters (position proportional to CHARACTER_SIZE)
     this.selectedCharacter = null
-    const nextX = this.cameras.main.width - 100
-    const nextY = this.cameras.main.height - 80
-    const nextButton = this.add.text(nextX, nextY, "Next", {
+    const nextButtonY = centerY + CHARACTER_SIZE / 2 + 80
+    const nextButton = this.add.text(centerX, nextButtonY, "Next", {
       fontSize: "32px",
       color: "#ffffff",
       backgroundColor: "#2196f3",
@@ -95,8 +102,8 @@ export class CharacterSelect extends Phaser.Scene {
 
     // Draw highlight frame around selected character
     const pad = 8
-    const w = 120 + pad * 2
-    const h = 120 + pad * 2
+    const w = CHARACTER_SIZE + pad * 2
+    const h = CHARACTER_SIZE + pad * 2
     const x = selectedSprite.x - w / 2
     const y = selectedSprite.y - h / 2
 
