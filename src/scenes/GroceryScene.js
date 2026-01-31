@@ -10,18 +10,18 @@ export class GroceryScene extends Phaser.Scene {
     this.load.image("shelf", "resources/grocery shelf.png")
 
     // Items
-    this.load.image("soup", "resources/icons/canned_soup.png")
-    this.load.image("cheese", "resources/icons/cheese_mozzarella.png")
-    this.load.image("eggs", "resources/icons/eggs_brown.png")
-    this.load.image("apple", "resources/icons/fruit_apple.png")
-    this.load.image("bread", "resources/icons/pastry_bread.png")
-    this.load.image("carrot", "resources/icons/vegetable_carrot.png")
-    this.load.image("potato", "resources/icons/vegetable_potato.png")
-    this.load.image("milk", "resources/icons/soymilk_soy.png")
-    this.load.image("cake", "resources/icons/cake_chocolate.png")
-    this.load.image("boba", "resources/icons/boba_taro.png")
-    this.load.image("icecream", "resources/icons/icecream_2scoops.png")
-    this.load.image("soda", "resources/icons/soda_coke.png")
+    this.load.image("soup", "Icons/canned_soup.png")
+    this.load.image("cheese", "Icons/cheese_mozzarella.png")
+    this.load.image("eggs", "Icons/eggs_brown.png")
+    this.load.image("apple", "Icons/fruit_apple.png")
+    this.load.image("bread", "Icons/pastry_bread.png")
+    this.load.image("carrot", "Icons/vegetable_carrot.png")
+    this.load.image("potato", "Icons/vegetable_potato.png")
+    this.load.image("milk", "Icons/soymilk_soy.png")
+    this.load.image("cake", "Icons/cake_chocolate.png")
+    this.load.image("boba", "Icons/boba_taro.png")
+    this.load.image("icecream", "Icons/icecream_2scoops.png")
+    this.load.image("soda", "Icons/soda_coke.png")
   }
 
   create() {
@@ -50,9 +50,9 @@ export class GroceryScene extends Phaser.Scene {
     ]
 
 const startX = 200
-const startY = 350
-const gapX = 220
-const gapY = 210
+const startY = 140
+const gapX = 270
+const gapY = 260
 
 const itemsPerRow = 4
 
@@ -66,7 +66,7 @@ items.forEach((item, index) => {
   // Item icon
   const icon = this.add.image(x, y, item.key)
     .setInteractive({ useHandCursor: true })
-    .setScale(0.8)
+    .setScale(5.5)
 
   // Price text
   this.add.text(x, y + 70, `$${item.price}`, {
