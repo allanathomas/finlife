@@ -21,13 +21,14 @@ export const gameState = {
 
   // Current shopping list (generated per scene visit)
   currentGroceryList: [],
+  currentDeptList: [],
 
   // Inventory of purchased items
   inventory: [],
 
   // Define what counts as NEEDS vs WANTS
-  needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk"],
-  wantItems: ["cake", "boba", "icecream", "soda"],
+  needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk", "bandages", "batteries", "lotion", "pan", "detergent", "sanitizer", "soap", "bulb", "toiletpaper"],
+  wantItems: ["cake", "boba", "icecream", "soda", "ducktopus", "pencilcase", "duck"],
 
   // Track completed tasks/objectives
   completedTasks: [],
