@@ -10,6 +10,9 @@ export class CharacterSelect extends Phaser.Scene {
     super("CharacterSelect")
   }
 
+  /**
+   * Load the assets (images, sounds, etc.)
+   */
   preload() {
     this.load.spritesheet("girl", "/resources/girlchar.png", {
       frameWidth: FRAME_WIDTH,
@@ -21,6 +24,9 @@ export class CharacterSelect extends Phaser.Scene {
     })
   }
 
+  /**
+   * Create the scene (add sprites, buttons, etc.)
+   */
   create() {
     // Girl animation
     this.anims.create({
