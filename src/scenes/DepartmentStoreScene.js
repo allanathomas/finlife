@@ -1,17 +1,161 @@
 import Phaser from "phaser"
+import { gameState } from "../GameState.js"
 
 export class DepartmentStoreScene extends Phaser.Scene {
   constructor() {
     super("DepartmentStoreScene")
   }
 
-  create() {
-    const centerX = this.cameras.main.centerX
-    const centerY = this.cameras.main.centerY
+  preload() {
+    this.load.image("shelf", "resources/depshelf.png")
 
-    this.add.text(centerX, centerY, "Department Store", {
-      fontSize: "48px",
+    this.load.image("bandages", "Pixel_Mart/bandage_box.png")
+    this.load.image("batteries", "Pixel_Mart/batteries.png")
+    this.load.image("lotion", "Pixel_Mart/body_lotion.png")
+    this.load.image("pan", "Pixel_Mart/frying pan.png")
+    this.load.image("detergent", "Pixel_Mart/detergent.png")
+    this.load.image("sanitizer", "Pixel_Mart/hand_sanitiser.png")
+    this.load.image("soap", "Pixel_Mart/soap.png")
+    this.load.image("bulb", "Pixel_Mart/light_bulb.png")
+    this.load.image("toiletpaper", "Pixel_Mart/toilet_paper.png")
+    this.load.image("ducktopus", "Pixel_Mart/rubber_ducktopus.png")
+    this.load.image("pencilcase", "Pixel_Mart/pencil_box.png")
+    this.load.image("duck", "Pixel_Mart/rubber_duck.png")
+  }
+
+  create() {
+    const { centerX, centerY } = this.cameras.main
+
+    // BANK TEXT (always visible)
+    this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
+      fontSize: "22px",
       color: "#ffffff",
-    }).setOrigin(0.5)
+    })
+
+    // Background
+    const bg = this.add.image(centerX, centerY, "shelf")
+    bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+
+    // Store items
+    this.items = [
+      { key: "bandages", name: "Bandages", price: 5 },
+      { key: "batteries", name: "Batteries", price: 7 },
+      { key: "lotion", name: "Lotion", price: 4 },
+      { key: "pan", name: "Frying Pan", price: 2 },
+      { key: "detergent", name: "Detergent", price: 6 },
+      { key: "sanitizer", name: "Hand Sanitizer", price: 3 },
+      { key: "soap", name: "Soap", price: 4 },
+      { key: "bulb", name: "Light Bulb", price: 3 },
+      { key: "toiletpaper", name: "Toilet Paper", price: 10 },
+      { key: "ducktopus", name: "Ducktopus", price: 12 },
+      { key: "pencilcase", name: "Pencil Case", price: 9 },
+      { key: "duck", name: "Rubber Duck", price: 3 },
+    ]
+
+    if (gameState.currentDeptList.length === 0) {
+      gameState.currentDeptList = this.generateDeptList(this.items)
+    }
+    this.drawDeptList()
+
+    // Shelf layout
+    const startX = 200
+    const startY = 140
+    const gapX = 270
+    const gapY = 260
+    const itemsPerRow = 4
+
+    this.items.forEach((item, index) => {
+      const col = index % itemsPerRow
+      const row = Math.floor(index / itemsPerRow)
+
+      const x = startX + col * gapX
+      const y = startY + row * gapY
+
+      const icon = this.add.image(x, y, item.key)
+        .setScale(3)
+        .setInteractive({ useHandCursor: true })
+
+      this.add.text(x, y + 70, `$${item.price}`, {
+        fontSize: "22px",
+        color: "#ffffff",
+      }).setOrigin(0.5)
+
+      icon.on("pointerdown", () => {
+        this.buyItem(item, icon)
+      })
+    })
+
+    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
+      .setInteractive()
+      .on("pointerdown", () => {
+      this.scene.start("DepartmentStoreScene")
+    })
+  }
+
+  // BUY ITEM FUNCTION
+  buyItem(item, icon) {
+    const index = gameState.currentDeptList.findIndex(i => i.key === item.key)
+    if (index === -1) return
+
+    if (gameState.bank < item.price) return
+
+    gameState.bank -= item.price
+    this.bankText.setText(`Bank: $${gameState.bank}`)
+
+    // Add to inventory
+    gameState.addToInventory(item)
+
+    gameState.currentDeptList.splice(index, 1)
+    this.drawGroceryList()
+
+    // Update health/happiness based on item type
+    if (item.key === "dogfood") {
+      gameState.updateStat("pet", "health", 10)
+      gameState.updateStat("pet", "happiness", 5)
+    } else if (gameState.isNeed(item.key)) {
+      gameState.updateStat("character", "health", 5)
+    } else if (gameState.isWant(item.key)) {
+      gameState.updateStat("character", "happiness", 10)
+      gameState.updateStat("character", "health", -3)  // Unhealthy treats
+    }
+
+    icon.setAlpha(0.4)
+    icon.disableInteractive()
+  }
+
+  generateDeptList(items) {
+    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 6)
+  }
+
+  drawDeptList() {
+    if (this.deptTexts) {
+      this.deptTexts.forEach(t => t.destroy())
+    }
+    this.deptTexts = []
+
+    const x = this.cameras.main.width - 20
+    const y = 20
+
+    this.deptTexts.push(
+      this.add.text(x, y, "Grocery List", {
+        fontSize: "24px",
+        color: "#000000",
+        backgroundColor: "#ffffff"
+      }).setOrigin(1, 0)
+    )
+
+    gameState.currentDeptList.forEach((item, index) => {
+      // Use gameState helper to check need vs want
+      const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
+
+      this.deptTexts.push(
+        this.add.text(
+          x,
+          y + 40 + index * 30,
+          `${item.name} - $${item.price}`,
+          { fontSize: "20px", color, backgroundColor: "#ffffff" }
+        ).setOrigin(1, 0)
+      )
+    })
   }
 }
