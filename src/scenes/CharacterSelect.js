@@ -81,6 +81,11 @@ export class CharacterSelect extends Phaser.Scene {
       this.selectCharacter(boySprite, "B")
     })
 
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
+
     // Next button - centered, below characters (position proportional to CHARACTER_SIZE)
     this.selectedCharacter = null
     const nextButtonY = centerY + CHARACTER_SIZE / 2 + 80

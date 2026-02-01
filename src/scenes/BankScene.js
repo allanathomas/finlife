@@ -23,6 +23,10 @@ export class BankScene extends Phaser.Scene {
       color: "#0a0a0a",
     })
     this.bankText.setScrollFactor(0)
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
   }
 
   update() {
