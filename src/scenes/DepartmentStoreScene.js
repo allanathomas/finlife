@@ -137,35 +137,159 @@ export class DepartmentStoreScene extends Phaser.Scene {
 
   // BUY ITEM FUNCTION
   buyItem(item, icon) {
-    const index = gameState.currentDeptList.findIndex(i => i.key === item.key)
-    if (index === -1) return
+    // If a confirmation dialogue is open, close it before proceeding
+    if (this.confirmDialogueOpen) {
+      if (this.dialogueBox) this.dialogueBox.destroy();
+      if (this.dialogueText) this.dialogueText.destroy();
+      if (this.yesButton) this.yesButton.destroy();
+      if (this.noButton) this.noButton.destroy();
+      this.confirmDialogueOpen = false;
+    }
 
-    if (gameState.bank < item.price) return
+    const index = gameState.currentDeptList.findIndex(i => i.key === item.key);
+    // If not on department list, ask for confirmation
+    if (index === -1) {
+      if (gameState.bank < item.price) {
+        this.showDialogue([`Not enough money to buy ${item.name}.`]);
+        return;
+      }
+      const left = gameState.bank - item.price;
+      this.showConfirmDialogue(
+        [
+          `${item.name} is not on your department list.`,
+          `If you buy this, you will spend $${item.price}.`,
+          `You will have $${left} left in your bank.`,
+          '',
+          `Remember: If you use your money for treats or toys now, you might not have enough for things you really need later,`,
+          `like supplies for you or your pet!`,
+          `Do you still want to buy this?`
+        ],
+        () => {
+          gameState.bank -= item.price;
+          this.bankText.setText(`Bank: $${gameState.bank}`);
+          gameState.addToInventory(item);
+          // Update health/happiness for wants
+          if (gameState.isWant(item.key)) {
+            gameState.updateStat("character", "happiness", 10);
+            gameState.updateStat("character", "health", -3);
+          }
+          this.characterDisplay.updateBars();
+          icon.setAlpha(0.4);
+          icon.disableInteractive();
+        }
+      );
+      return;
+    }
 
-    gameState.bank -= item.price
-    this.bankText.setText(`Bank: $${gameState.bank}`)
+    if (gameState.bank < item.price) {
+      this.showDialogue([`Not enough money to buy ${item.name}.`]);
+      return;
+    }
+
+    gameState.bank -= item.price;
+    this.bankText.setText(`Bank: $${gameState.bank}`);
 
     // Add to inventory
-    gameState.addToInventory(item)
+    gameState.addToInventory(item);
 
-    gameState.currentDeptList.splice(index, 1)
-    this.drawDeptList()
+    gameState.currentDeptList.splice(index, 1);
+    this.drawDeptList();
 
-    this.characterDisplay.updateBars()
+    this.characterDisplay.updateBars();
 
     // Update health/happiness based on item type
     if (item.key === "dogfood") {
-      gameState.updateStat("pet", "health", 10)
-      gameState.updateStat("pet", "happiness", 5)
+      gameState.updateStat("pet", "health", 10);
+      gameState.updateStat("pet", "happiness", 5);
     } else if (gameState.isNeed(item.key)) {
-      gameState.updateStat("character", "health", 5)
+      gameState.updateStat("character", "health", 5);
     } else if (gameState.isWant(item.key)) {
-      gameState.updateStat("character", "happiness", 10)
-      gameState.updateStat("character", "health", -3)  // Unhealthy treats
+      gameState.updateStat("character", "happiness", 10);
+      gameState.updateStat("character", "health", -3);  // Unhealthy treats
     }
 
-    icon.setAlpha(0.4)
-    icon.disableInteractive()
+    icon.setAlpha(0.4);
+    icon.disableInteractive();
+  }
+  // Confirmation dialogue with Yes/No (copied and adapted from GroceryScene)
+  showConfirmDialogue(messages, onYes) {
+    this.confirmDialogueOpen = true;
+    this.dialogueMessages = messages;
+    this.dialogueIndex = 0;
+
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.height - 200;
+
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
+    this.dialogueBox.setStrokeStyle(2, 0xffffff);
+
+    this.dialogueText = this.add.text(centerX - 430, centerY - 100, "", {
+      fontSize: "24px",
+      color: "#ffffff",
+      wordWrap: { width: 860 },
+    });
+
+    // Yes/No buttons
+    this.yesButton = this.add.text(centerX + 200, centerY + 60, "Yes", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#228B22"
+    }).setInteractive();
+    this.noButton = this.add.text(centerX + 300, centerY + 60, "No", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#B22222"
+    }).setInteractive();
+
+    this.yesButton.on("pointerdown", () => {
+      this.dialogueBox.destroy();
+      this.dialogueText.destroy();
+      this.yesButton.destroy();
+      this.noButton.destroy();
+      this.confirmDialogueOpen = false;
+      onYes();
+    });
+    this.noButton.on("pointerdown", () => {
+      this.dialogueBox.destroy();
+      this.dialogueText.destroy();
+      this.yesButton.destroy();
+      this.noButton.destroy();
+      this.confirmDialogueOpen = false;
+    });
+
+    this.dialogueText.setText(this.dialogueMessages.join("\n"));
+  }
+
+  // Simple dialogue popup for errors
+  showDialogue(messages) {
+    this.dialogueMessages = messages;
+    this.dialogueIndex = 0;
+
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.height - 180;
+
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
+    this.dialogueBox.setStrokeStyle(2, 0xffffff);
+
+    this.dialogueText = this.add.text(centerX - 430, centerY - 70, "", {
+      fontSize: "24px",
+      color: "#ffffff",
+      wordWrap: { width: 860 },
+    });
+
+    this.nextButton = this.add.text(centerX + 360, centerY + 60, "Next", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#333"
+    }).setInteractive();
+
+    this.nextButton.on("pointerdown", () => {
+      this.dialogueBox.destroy();
+      this.dialogueText.destroy();
+      this.nextButton.destroy();
+    });
+
+    this.dialogueText.setText(this.dialogueMessages.join("\n"));
   }
 
   generateDeptList(items) {
