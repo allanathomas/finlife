@@ -15,6 +15,7 @@ export const gameState = {
 
   // Financial
   bank: 0,
+  piggyBalance: 48,
   salary: 200,
 
   // time
@@ -72,6 +73,7 @@ export const gameState = {
     this.pet.health = 100
     this.pet.happiness = 100
     this.bank = 200
+    this.piggyBalance = 50
     this.week = 0
     this.inventory = []
     this.currentGroceryList = []

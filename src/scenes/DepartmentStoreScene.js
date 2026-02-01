@@ -3,14 +3,12 @@ import { gameState } from "../GameState.js"
 import { createCharacterDisplay } from "../CharacterDisplay.js"
 import { createPetDisplay } from "../PetDisplay.js"
 
-
 export class DepartmentStoreScene extends Phaser.Scene {
   constructor() {
     super("DepartmentStoreScene")
   }
 
   preload() {
-    this.load.image("userFr", "/pictures/userFr.png")
     this.load.image("shelf", "resources/depshelf.avif")
     this.load.image("nextButton", "/pictures/NEXT.png")
 
@@ -22,11 +20,11 @@ export class DepartmentStoreScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     })
+
     this.load.spritesheet("dog", "resources/dog.png", {
       frameWidth: 32,
       frameHeight: 32,
     })
-
     this.load.image("bandages", "Pixel_Mart/bandage_box.png")
     this.load.image("batteries", "Pixel_Mart/batteries.png")
     this.load.image("lotion", "Pixel_Mart/body_lotion.png")
@@ -48,11 +46,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
     const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
-    // Add userFr image (top left corner)
-    this.add.image(100, 45, 'userFr')
-          .setOrigin(0.5)
-          .setScale(0.5, 0.3);
-
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
@@ -63,11 +56,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
       fontSize: "22px",
       color: "#000000",
     })
-
-    // Escape key to return to MainMenu
-    this.input.keyboard.on('keydown-ESC', () => {
-      this.scene.start('MainMenu');
-    });
 
     // Store items
     this.items = [
@@ -121,6 +109,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
       height: characterHeight * petScale,
       depth: 20
     })
+
     // Shelf layout
     const startX = 200
     const startY = 140
@@ -154,6 +143,8 @@ export class DepartmentStoreScene extends Phaser.Scene {
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
+      // Clear the department list so a new one is generated next time
+      gameState.currentDeptList = []
       this.scene.start("ClinicScene");
     });
   }
@@ -162,21 +153,22 @@ export class DepartmentStoreScene extends Phaser.Scene {
   buyItem(item, icon) {
     // If a confirmation dialogue is open, close it before proceeding
     if (this.confirmDialogueOpen) {
-      if (this.dialogueBox) this.dialogueBox.destroy();
-      if (this.dialogueText) this.dialogueText.destroy();
-      if (this.yesButton) this.yesButton.destroy();
-      if (this.noButton) this.noButton.destroy();
-      this.confirmDialogueOpen = false;
+      if (this.dialogueBox) this.dialogueBox.destroy()
+      if (this.dialogueText) this.dialogueText.destroy()
+      if (this.yesButton) this.yesButton.destroy()
+      if (this.noButton) this.noButton.destroy()
+      this.confirmDialogueOpen = false
     }
 
-    const index = gameState.currentDeptList.findIndex(i => i.key === item.key);
+    const index = gameState.currentDeptList.findIndex(i => i.key === item.key)
+    
     // If not on department list, ask for confirmation
     if (index === -1) {
       if (gameState.bank < item.price) {
-        this.showDialogue([`Not enough money to buy ${item.name}.`]);
-        return;
+        this.showDialogue([`Not enough money to buy ${item.name}.`])
+        return
       }
-      const left = gameState.bank - item.price;
+      const left = gameState.bank - item.price
       this.showConfirmDialogue(
         [
           "Oops! This item isn't on your list.",
@@ -190,55 +182,94 @@ export class DepartmentStoreScene extends Phaser.Scene {
           "Do you want to buy it anyway?"
         ],
         () => {
-          gameState.bank -= item.price;
-          this.bankText.setText(`Bank: $${gameState.bank}`);
-          gameState.addToInventory(item);
+          // Yes: proceed with purchase
+          gameState.bank -= item.price
+          this.bankText.setText(`Bank: $${gameState.bank}`)
+          gameState.addToInventory(item)
           // Update health/happiness for wants
           if (gameState.isWant(item.key)) {
-            gameState.updateStat("character", "happiness", 10);
-            gameState.updateStat("character", "health", -3);
+            gameState.updateStat("character", "happiness", 10)
+            gameState.updateStat("character", "health", -3)
           }
-          this.characterDisplay.updateBars();
-          this.petDisplay.updateBars();
-          icon.setAlpha(0.4);
-          icon.disableInteractive();
+          this.characterDisplay.updateBars()
+          this.petDisplay.updateBars()
+          icon.setAlpha(0.4)
+          icon.disableInteractive()
         }
-      );
-      return;
+      )
+      return
     }
 
     if (gameState.bank < item.price) {
-      this.showDialogue([`Not enough money to buy ${item.name}.`]);
-      return;
+      this.showDialogue([`Not enough money to buy ${item.name}.`])
+      return
     }
 
-    gameState.bank -= item.price;
-    this.bankText.setText(`Bank: $${gameState.bank}`);
+    gameState.bank -= item.price
+    this.bankText.setText(`Bank: $${gameState.bank}`)
 
     // Add to inventory
-    gameState.addToInventory(item);
+    gameState.addToInventory(item)
 
-    gameState.currentDeptList.splice(index, 1);
-    this.drawDeptList();
+    gameState.currentDeptList.splice(index, 1)
+    this.drawDeptList()
 
-    this.characterDisplay.updateBars();
-    this.petDisplay.updateBars();
+    this.characterDisplay.updateBars()
+    this.petDisplay.updateBars()
 
     // Update health/happiness based on item type
-    if (item.key === "duck" || item.key == "ducktopus") {
-      gameState.updateStat("pet", "happiness", 15);
+    if (item.key === "dogfood") {
+      gameState.updateStat("pet", "health", 10)
+      gameState.updateStat("pet", "happiness", 5)
     } else if (gameState.isNeed(item.key)) {
-      gameState.updateStat("character", "health", 5);
+      gameState.updateStat("character", "health", 5)
     } else if (gameState.isWant(item.key)) {
-      gameState.updateStat("character", "happiness", 10);
-      gameState.updateStat("character", "health", -3);  // Unhealthy treats
+      gameState.updateStat("character", "happiness", 10)
+      gameState.updateStat("character", "health", -3)  // Unhealthy treats
     }
 
-    icon.setAlpha(0.4);
-    icon.disableInteractive();
+    icon.setAlpha(0.4)
+    icon.disableInteractive()
   }
-  // Confirmation dialogue with Yes/No (copied and adapted from GroceryScene)
-    showConfirmDialogue(messages, onYes) {
+
+  generateDeptList(items) {
+    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 6)
+  }
+
+  drawDeptList() {
+    if (this.deptTexts) {
+      this.deptTexts.forEach(t => t.destroy())
+    }
+    this.deptTexts = []
+
+    const x = this.cameras.main.width - 20
+    const y = 20
+
+    this.deptTexts.push(
+      this.add.text(x, y, "Department List", {
+        fontSize: "24px",
+        color: "#000000",
+        backgroundColor: "#ffffff"
+      }).setOrigin(1, 0)
+    )
+
+    gameState.currentDeptList.forEach((item, index) => {
+      // Use gameState helper to check need vs want
+      const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
+
+      this.deptTexts.push(
+        this.add.text(
+          x,
+          y + 40 + index * 30,
+          `${item.name} - $${item.price}`,
+          { fontSize: "20px", color, backgroundColor: "#ffffff" }
+        ).setOrigin(1, 0)
+      )
+    })
+  }
+
+  // Confirmation dialogue with Yes/No
+  showConfirmDialogue(messages, onYes) {
     this.confirmDialogueOpen = true
     this.dialogueMessages = messages
     this.dialogueIndex = 0
@@ -289,72 +320,47 @@ export class DepartmentStoreScene extends Phaser.Scene {
     this.dialogueText.setText(this.dialogueMessages.join("\n"))
   }
 
-
-  // Simple dialogue popup for errors
+  // Dialogue popup
   showDialogue(messages) {
-    this.dialogueMessages = messages;
-    this.dialogueIndex = 0;
+    this.dialogueMessages = messages
+    this.dialogueIndex = 0
 
-    const centerX = this.cameras.main.centerX;
-    const centerY = this.cameras.main.height - 180;
+    const centerX = this.cameras.main.centerX
+    const centerY = this.cameras.main.height - 180
 
-    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
-    this.dialogueBox.setStrokeStyle(2, 0xffffff);
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8)
+    this.dialogueBox.setStrokeStyle(2, 0xffffff)
 
     this.dialogueText = this.add.text(centerX - 430, centerY - 70, "", {
       fontSize: "24px",
       color: "#ffffff",
       wordWrap: { width: 860 },
-    });
+    })
 
     this.nextButton = this.add.text(centerX + 360, centerY + 60, "Next", {
       fontSize: "24px",
       color: "#fff",
       backgroundColor: "#333"
-    }).setInteractive();
+    }).setInteractive()
 
     this.nextButton.on("pointerdown", () => {
-      this.dialogueBox.destroy();
-      this.dialogueText.destroy();
-      this.nextButton.destroy();
-    });
-
-    this.dialogueText.setText(this.dialogueMessages.join("\n"));
-  }
-
-  generateDeptList(items) {
-    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 6)
-  }
-
-  drawDeptList() {
-    if (this.deptTexts) {
-      this.deptTexts.forEach(t => t.destroy())
-    }
-    this.deptTexts = []
-
-    const x = this.cameras.main.width - 20
-    const y = 20
-
-    this.deptTexts.push(
-      this.add.text(x, y, "Department List", {
-        fontSize: "24px",
-        color: "#000000",
-        backgroundColor: "#ffffff"
-      }).setOrigin(1, 0)
-    )
-
-    gameState.currentDeptList.forEach((item, index) => {
-      // Use gameState helper to check need vs want
-      const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
-
-      this.deptTexts.push(
-        this.add.text(
-          x,
-          y + 40 + index * 30,
-          `${item.name} - $${item.price}`,
-          { fontSize: "20px", color, backgroundColor: "#ffffff" }
-        ).setOrigin(1, 0)
-      )
+      this.nextDialogue()
     })
+
+    this.nextDialogue()
+  }
+
+  nextDialogue() {
+    if (!this.dialogueMessages) return
+
+    if (this.dialogueIndex >= this.dialogueMessages.length) {
+      this.dialogueBox.destroy()
+      this.dialogueText.destroy()
+      this.nextButton.destroy()
+      return
+    }
+
+    this.dialogueText.setText(this.dialogueMessages[this.dialogueIndex])
+    this.dialogueIndex++
   }
 }

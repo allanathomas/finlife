@@ -40,6 +40,7 @@ preload() {
 
     gameState.week += 1;
     if ((gameState.week % 2) == 0) gameState.bank += 200;
+    gameState.piggyBalance = (gameState.piggyBalance ?? 0) + 2;  // Piggy balance +2 every week
     // Set new starting bank for this week
     gameState.startingBank = gameState.bank;
 

@@ -1,6 +1,7 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
 import { createCharacterDisplay } from "../CharacterDisplay.js"
+import { createPiggyDisplay } from "../PiggyDisplay.js"
 
 export class TownScene extends Phaser.Scene {
     constructor() {
@@ -14,6 +15,7 @@ export class TownScene extends Phaser.Scene {
       this.load.image("shopButton", "resources/groceryIcon.png")
       this.load.image("houseButton", "resources/house.png")
       this.load.image("departmButton", "resources/departmIcon.png")
+      this.load.image("piggy", "pictures/piggy.png")
     }
 
     create() {
@@ -38,6 +40,15 @@ export class TownScene extends Phaser.Scene {
         fontSize: "22px",
         color: "#000000",
       })
+
+      // Add piggy display (clickable, shows Invest/Withdraw popup)
+      this.piggyDisplay = createPiggyDisplay(this, {
+        x: 300,
+        y: 0,
+        balanceTextX: 350,
+        balanceTextY: 40,
+        onBalanceChange: () => this.bankText?.setText(`Bank: $${gameState.bank}`),
+      });
 
       // Add interactive buttons
       // Clinic Button
@@ -66,4 +77,5 @@ export class TownScene extends Phaser.Scene {
         this.scene.start('MainMenu');
       });
   }
+
 }
