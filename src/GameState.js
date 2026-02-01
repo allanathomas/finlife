@@ -79,3 +79,4 @@ export const gameState = {
     this.bills.forEach(b => b.due = false)
   },
 }
+}
