@@ -15,6 +15,15 @@ export class ClinicScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main
 
+    gameState.currentDeptList.forEach((item) => {
+      if (gameState.needItems.includes(item.key)) {
+        gameState.character.health -= 10
+      }
+      if (gameState.wantItems.includes(item.key)) {
+        gameState.character.happiness -= 10
+      }
+    })
+
     // Background
     const bg = this.add.image(centerX, centerY, "clinic")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
@@ -30,22 +39,36 @@ export class ClinicScene extends Phaser.Scene {
       color: "#000000",
     })
 
-    if (gameState.character.health < 50) {
-      this.showDialogue([
-      `Welcome to the clinic.`,
-      `Your health is at ${gameState.character.health}.`,
-      `You are sick!`,
-      `You need to pay $30.`
-    ])
-      gameState.character.health += 40
-      gameState.bank -= 30
-    } else {
-      this.showDialogue([
-      `Welcome to the clinic.`,
-      `Your health is at ${gameState.character.health}.`,
-      `You are healthy!`
-    ])
-    }
+  const messages = [
+    `Welcome to the clinic.`,
+    `Your health is at ${gameState.character.health}.`,
+  ]
+
+  // character check
+  if (gameState.character.health < 50) {
+    messages.push("You are sick!")
+    messages.push("You need to pay $30.")
+    gameState.character.health += 40
+    gameState.bank -= 30
+  } else {
+    messages.push("You are healthy!")
+  }
+
+  // pet check
+  messages.push(`Your pet's health is at ${gameState.pet.health}.`)
+
+  if (gameState.pet.health < 50) {
+    messages.push("Your pet is sick!")
+    messages.push("You need to pay $40.")
+    gameState.pet.health += 40
+    gameState.bank -= 40
+  } else {
+    messages.push("Your pet is healthy!")
+  }
+
+  // show dialogue once
+  this.showDialogue(messages)
+
 
     this.add.image(400, 400, "nextButton")
       .setScale(0.2)
