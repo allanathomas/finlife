@@ -153,6 +153,17 @@ export class DepartmentStoreScene extends Phaser.Scene {
 
     this.characterDisplay.updateBars()
 
+    // Update health/happiness based on item type
+    if (item.key === "dogfood") {
+      gameState.updateStat("pet", "health", 10)
+      gameState.updateStat("pet", "happiness", 5)
+    } else if (gameState.isNeed(item.key)) {
+      gameState.updateStat("character", "health", 5)
+    } else if (gameState.isWant(item.key)) {
+      gameState.updateStat("character", "happiness", 10)
+      gameState.updateStat("character", "health", -3)  // Unhealthy treats
+    }
+
     icon.setAlpha(0.4)
     icon.disableInteractive()
   }
