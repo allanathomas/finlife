@@ -18,7 +18,8 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   backgroundColor: "#1d1d1d",
-  scene: [MainMenu, CharacterSelect, GameScene, GroceryScene, ClinicScene, DepartmentStoreScene, HomeScene, BankScene],
+  scene: [MainMenu, CharacterSelect, GameScene, HomeScene, GroceryScene, DepartmentStoreScene, ClinicScene, BankScene],
 }
 
 new Phaser.Game(config)
+

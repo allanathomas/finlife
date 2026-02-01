@@ -1,8 +1,13 @@
 import Phaser from "phaser"
+import { gameState } from "../GameState.js"
 
 export class ClinicScene extends Phaser.Scene {
   constructor() {
     super("ClinicScene")
+  }
+
+  preload() {
+    this.load.image("clinic", "pictures/clinic.png")
   }
 
   create() {
@@ -13,5 +18,8 @@ export class ClinicScene extends Phaser.Scene {
       fontSize: "48px",
       color: "#ffffff",
     }).setOrigin(0.5)
+
+    
+
   }
 }

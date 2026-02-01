@@ -14,35 +14,33 @@ export const gameState = {
   },
 
   // Financial
-  bank: 2000,
-  salary: 2000,
+  bank: 0,
+  salary: 200,
+
+  // time
+  week: -1,
 
   // ===== LISTS =====
 
   // Current shopping list (generated per scene visit)
   currentGroceryList: [],
+  currentDeptList: [],
 
   // Inventory of purchased items
   inventory: [],
 
-  // Define what counts as NEEDS vs WANTS (grocery)
-  needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk"],
-  wantItems: ["cake", "boba", "icecream", "soda"],
-
-  // Department store list and need/want items
-  currentDeptList: [],
-  deptNeedItems: ["bandages", "soap", "sanitizer", "detergent", "toiletpaper", "bulb", "batteries", "pan"],
-  deptWantItems: ["lotion", "ducktopus", "pencilcase", "duck"],
+  // Define what counts as NEEDS vs WANTS
+  needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk", "bandages", "batteries", "lotion", "pan", "detergent", "sanitizer", "soap", "bulb", "toiletpaper"],
+  wantItems: ["cake", "boba", "icecream", "soda", "ducktopus", "pencilcase", "duck"],
 
   // Track completed tasks/objectives
   completedTasks: [],
 
   // Bills/expenses that must be paid
-  
-  // bills: [
-  //   { name: "Rent", amount: 500, due: false },
-  //   { name: "Utilities", amount: 100, due: false },
-  // ],
+  bills: [
+    { name: "Rent", amount: 500, due: false },
+    { name: "Utilities", amount: 100, due: false },
+  ],
 
   // ===== HELPER METHODS =====
 
@@ -52,14 +50,6 @@ export const gameState = {
 
   isWant(itemKey) {
     return this.wantItems.includes(itemKey)
-  },
-
-  isDeptNeed(itemKey) {
-    return this.deptNeedItems.includes(itemKey)
-  },
-
-  isDeptWant(itemKey) {
-    return this.deptWantItems.includes(itemKey)
   },
 
   addToInventory(item) {
@@ -81,11 +71,11 @@ export const gameState = {
     this.character.happiness = 100
     this.pet.health = 100
     this.pet.happiness = 100
-    this.bank = 2000
+    this.bank = 200
+    this.week = 0
     this.inventory = []
     this.currentGroceryList = []
-    this.currentDeptList = []
     this.completedTasks = []
-    if (this.bills) this.bills.forEach(b => b.due = false)
+    this.bills.forEach(b => b.due = false)
   },
 }
