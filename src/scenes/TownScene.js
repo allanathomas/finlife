@@ -58,12 +58,6 @@ export class TownScene extends Phaser.Scene {
         this.scene.start('DepartmentStoreScene');
       });
 
-      // House Button (Home)
-      const houseBtn = this.add.image(100, centerY + 80, 'houseButton').setInteractive().setScale(1.5);
-      houseBtn.on('pointerdown', () => {
-        this.scene.start('HomeScene');
-      });
-
       // Escape key to return to MainMenu
       this.input.keyboard.on('keydown-ESC', () => {
         this.scene.start('MainMenu');
