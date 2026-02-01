@@ -138,9 +138,9 @@ const messages = [
   showSavingReward() {
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.height / 2;
-    const box = this.add.rectangle(centerX, centerY, 700, 250, 0x4caf50, 0.95);
+    const box = this.add.rectangle(centerX, centerY - 100, 700, 250, 0x4caf50, 0.95);
     box.setStrokeStyle(4, 0xffffff);
-    const text = this.add.text(centerX - 320, centerY - 90,
+    const text = this.add.text(centerX - 320, centerY - 220,
       "Congratulations!\n\nYou saved at least half of your money this week!\n\nSaving means putting some money aside instead of spending it all, so you can use it for something important or fun in the future.",
       {
         fontSize: "28px",
@@ -148,7 +148,7 @@ const messages = [
         wordWrap: { width: 650 },
       }
     );
-    const okBtn = this.add.text(centerX, centerY + 70, "OK", {
+    const okBtn = this.add.text(centerX, centerY + 50, "OK", {
       fontSize: "32px",
       color: "#000",
       backgroundColor: "#fff",
