@@ -20,6 +20,9 @@ export class ClinicScene extends Phaser.Scene {
       if (gameState.needItems.includes(item.key)) {
         gameState.character.health -= 10
       }
+      if (item == "duck" || item == "ducktopus") {
+        gameState.pet.happiness -= 10
+      }
       if (gameState.wantItems.includes(item.key)) {
         gameState.character.happiness -= 10
       }
