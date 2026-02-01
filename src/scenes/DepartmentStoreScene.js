@@ -131,7 +131,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
-      this.scene.start("DepartmentStoreScene");
+      this.scene.start("ClinicScene");
     });
   }
 
