@@ -24,20 +24,17 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
       .setAlpha(0.7)
-    this.scene.launch("BankScene")
 
     // UI
-    this.bankAmount = 0
-    this.salary = 2000
-    this.pet = "Dog"
-    this.health = 100
-    this.happiness = 100
+    this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
+      fontSize: "22px",
+      color: "#ffffff",
+    })
 
-    this.scene.launch("BankScene", { bankAmount: 2000 })
-
-    this.healthBar = this.add.graphics()
-    this.happinessBar = this.add.graphics()
-    this.drawBars()
+    this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
+      fontSize: "22px",
+      color: "#ffffff",
+    })
 
     // Salary event
     // this.time.addEvent({
@@ -52,22 +49,22 @@ export class GameScene extends Phaser.Scene {
     // Dialogue queue
     this.showDialogue([
       "Welcome to FinLife!",
-      "This is you.",
-      "This is your dog.",
-      "You will have to take care of yourself and your pet.",
-      "Make sure you make good financial decisions!",
-      "Here is your Bank Account.",
-      "A Bank Account is a kind of piggy bank.",
-      "Here is your salary.",
-      "A salary is money you get from working a job.",
-      "Your salary is used to pay for expenses."
+      "Your parents are busy working so you'll have to go shopping for your family.",
+      "They've given you an allowance to pay for the things you need.",
+      "If you have leftover money you can use it on your wants.",
+      "Be careful! Watch your health and happiness bars, and make sure to buy what you NEED, before buying what you WANT.",
+      "Items you NEED will show up in red, while items you WANT will show up in purple.",
+      "Needs will elevate your health, and wants will elevate your happiness.",
+      "Every two weeks you'll get your allowance, but be careful!",
+      "You'll have to go shopping every WEEK.",
+      "Have fun!"
     ])
 
     this.add.image(400, 400, "nextButton")
       .setScale(0.2)
       .setInteractive()
       .on("pointerdown", () => {
-      this.scene.start("GroceryScene")
+      this.scene.start("HomeScene")
     })
   }
 
