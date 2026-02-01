@@ -1,6 +1,5 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
-import { createCharacterDisplay } from "../CharacterDisplay.js"
 
 export class GroceryScene extends Phaser.Scene {
   constructor() {
@@ -39,15 +38,20 @@ export class GroceryScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main
 
+    // Background
+    const bg = this.add.image(centerX, centerY, "shelf")
+    bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
       color: "#ffffff",
     })
 
-    // Background
-    const bg = this.add.image(centerX, centerY, "shelf")
-    bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+    this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
+      fontSize: "22px",
+      color: "#ffffff",
+    })
 
     // Store items
     this.items = [
@@ -70,22 +74,6 @@ export class GroceryScene extends Phaser.Scene {
       gameState.currentGroceryList = this.generateGroceryList(this.items)
     }
     this.drawGroceryList()
-
-    // Selected character with health/happiness bars - right side, below grocery list
-    const screenWidth = this.cameras.main.width
-    const screenHeight = this.cameras.main.height
-    const listBottomY = 20 + 40 + Math.max(gameState.currentGroceryList.length, 6) * 30 + 20
-    const charWidth = screenWidth / 3
-    const charHeight = screenHeight / 2
-    const charX = screenWidth - 20 - charWidth / 2
-    const charY = listBottomY + charHeight / 2 + 40
-
-    this.characterDisplay = createCharacterDisplay(this, {
-      x: charX,
-      y: charY,
-      width: charWidth,
-      height: charHeight,
-    })
 
     // Shelf layout
     const startX = 200

@@ -1,6 +1,5 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
-import { createCharacterDisplay } from "../CharacterDisplay.js"
 
 export class DepartmentStoreScene extends Phaser.Scene {
   constructor() {
@@ -9,9 +8,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
 
   preload() {
     this.load.image("shelf", "resources/depshelf.png")
-
-    // Load NEXT button image
-    this.load.image("nextButton", "/pictures/NEXT.png")
 
     this.load.spritesheet("girl", "resources/girlchar.png", {
       frameWidth: 32,
@@ -39,15 +35,20 @@ export class DepartmentStoreScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main
 
+    // Background
+    const bg = this.add.image(centerX, centerY, "shelf2")
+    bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
-    // Background
-    const bg = this.add.image(centerX, centerY, "shelf")
-    bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+    this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
+      fontSize: "22px",
+      color: "#000000",
+    })
 
     // Store items
     this.items = [
@@ -69,22 +70,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
       gameState.currentDeptList = this.generateDeptList(this.items)
     }
     this.drawDeptList()
-
-    // Selected character with health/happiness bars - right side, below department list
-    const screenWidth = this.cameras.main.width
-    const screenHeight = this.cameras.main.height
-    const listBottomY = 20 + 40 + Math.max(gameState.currentDeptList.length, 6) * 30 + 20
-    const charWidth = screenWidth / 3
-    const charHeight = screenHeight / 2
-    const charX = screenWidth - 20 - charWidth / 2
-    const charY = listBottomY + charHeight / 2 + 40
-
-    this.characterDisplay = createCharacterDisplay(this, {
-      x: charX,
-      y: charY,
-      width: charWidth,
-      height: charHeight,
-    })
 
     // Shelf layout
     const startX = 200
@@ -114,13 +99,11 @@ export class DepartmentStoreScene extends Phaser.Scene {
       })
     })
 
-    // Add NEXT image button in bottom right corner
-    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
-      .setScale(0.22)
-      .setInteractive();
-    nextBtn.on("pointerdown", () => {
-      this.scene.start("DepartmentStoreScene");
-    });
+    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
+      .setInteractive()
+      .on("pointerdown", () => {
+      this.scene.start("DepartmentStoreScene")
+    })
   }
 
   // BUY ITEM FUNCTION
@@ -137,17 +120,18 @@ export class DepartmentStoreScene extends Phaser.Scene {
     gameState.addToInventory(item)
 
     gameState.currentDeptList.splice(index, 1)
-    this.drawDeptList()
+    this.drawGroceryList()
 
-    // Update health/happiness based on department store item type
-    if (gameState.isDeptNeed(item.key)) {
+    // Update health/happiness based on item type
+    if (item.key === "dogfood") {
+      gameState.updateStat("pet", "health", 10)
+      gameState.updateStat("pet", "happiness", 5)
+    } else if (gameState.isNeed(item.key)) {
       gameState.updateStat("character", "health", 5)
-      gameState.updateStat("character", "happiness", 2)
-    } else if (gameState.isDeptWant(item.key)) {
+    } else if (gameState.isWant(item.key)) {
       gameState.updateStat("character", "happiness", 10)
+      gameState.updateStat("character", "health", -3)  // Unhealthy treats
     }
-
-    this.characterDisplay.updateBars()
 
     icon.setAlpha(0.4)
     icon.disableInteractive()
@@ -167,7 +151,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     const y = 20
 
     this.deptTexts.push(
-      this.add.text(x, y, "Department List", {
+      this.add.text(x, y, "Grocery List", {
         fontSize: "24px",
         color: "#000000",
         backgroundColor: "#ffffff"
@@ -175,7 +159,8 @@ export class DepartmentStoreScene extends Phaser.Scene {
     )
 
     gameState.currentDeptList.forEach((item, index) => {
-      const color = gameState.isDeptNeed(item.key) ? "#ff0000" : "#b000ff"
+      // Use gameState helper to check need vs want
+      const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
 
       this.deptTexts.push(
         this.add.text(
