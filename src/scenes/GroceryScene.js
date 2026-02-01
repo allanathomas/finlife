@@ -128,6 +128,15 @@ export class GroceryScene extends Phaser.Scene {
 
   // BUY ITEM FUNCTION
   buyItem(item, icon) {
+    // If a confirmation dialogue is open, close it before proceeding
+    if (this.confirmDialogueOpen) {
+      if (this.dialogueBox) this.dialogueBox.destroy();
+      if (this.dialogueText) this.dialogueText.destroy();
+      if (this.yesButton) this.yesButton.destroy();
+      if (this.noButton) this.noButton.destroy();
+      this.confirmDialogueOpen = false;
+      // Continue to process the new item
+    }
     const index = gameState.currentGroceryList.findIndex(i => i.key === item.key);
     // If not on grocery list, ask for confirmation
     if (index === -1) {
@@ -198,6 +207,7 @@ export class GroceryScene extends Phaser.Scene {
 
   // Confirmation dialogue with Yes/No
   showConfirmDialogue(messages, onYes) {
+    this.confirmDialogueOpen = true;
     this.dialogueMessages = messages;
     this.dialogueIndex = 0;
 
@@ -230,6 +240,7 @@ export class GroceryScene extends Phaser.Scene {
       this.dialogueText.destroy();
       this.yesButton.destroy();
       this.noButton.destroy();
+      this.confirmDialogueOpen = false;
       onYes();
     });
     this.noButton.on("pointerdown", () => {
@@ -237,6 +248,7 @@ export class GroceryScene extends Phaser.Scene {
       this.dialogueText.destroy();
       this.yesButton.destroy();
       this.noButton.destroy();
+      this.confirmDialogueOpen = false;
     });
 
     this.dialogueText.setText(this.dialogueMessages.join("\n"));
