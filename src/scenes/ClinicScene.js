@@ -70,12 +70,13 @@ export class ClinicScene extends Phaser.Scene {
   this.showDialogue(messages)
 
 
-    this.add.image(400, 400, "nextButton")
-      .setScale(0.2)
-      .setInteractive()
-      .on("pointerdown", () => {
-      this.scene.start("HomeScene")
-    })
+    // Add NEXT image button
+    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
+      .setScale(0.22)
+      .setInteractive();
+    nextBtn.on("pointerdown", () => {
+      this.scene.start("HomeScene");
+    });
 
   }
 
