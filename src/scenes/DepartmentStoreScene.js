@@ -42,19 +42,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main
 
-    gameState.currentGroceryList.forEach((item) => {
-      if (gameState.needItems.includes(item.key)) {
-        if (item == "dogfood") {
-          gameState.pet.health -= 20
-        } else {
-          gameState.character.health -= 10
-        }
-      }
-      if (gameState.wantItems.includes(item.key)) {
-        gameState.character.happiness -= 10
-      }
-    })
-
     // Background
     const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
@@ -156,16 +143,67 @@ export class DepartmentStoreScene extends Phaser.Scene {
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
-      this.scene.start("DepartmentStoreScene");
+      // Clear the department list so a new one is generated next time
+      gameState.currentDeptList = []
+      this.scene.start("ClinicScene");
     });
   }
 
   // BUY ITEM FUNCTION
   buyItem(item, icon) {
-    const index = gameState.currentDeptList.findIndex(i => i.key === item.key)
-    if (index === -1) return
+    // If a confirmation dialogue is open, close it before proceeding
+    if (this.confirmDialogueOpen) {
+      if (this.dialogueBox) this.dialogueBox.destroy()
+      if (this.dialogueText) this.dialogueText.destroy()
+      if (this.yesButton) this.yesButton.destroy()
+      if (this.noButton) this.noButton.destroy()
+      this.confirmDialogueOpen = false
+    }
 
-    if (gameState.bank < item.price) return
+    const index = gameState.currentDeptList.findIndex(i => i.key === item.key)
+    
+    // If not on department list, ask for confirmation
+    if (index === -1) {
+      if (gameState.bank < item.price) {
+        this.showDialogue([`Not enough money to buy ${item.name}.`])
+        return
+      }
+      const left = gameState.bank - item.price
+      this.showConfirmDialogue(
+        [
+          "Oops! This item isn't on your list.",
+          "",
+          `It costs $${item.price}.`,
+          "You'll have less money after buying it.",
+          "",
+          "If you buy this item now, you might not have enough money later",
+          "for important things — like food for you or your pet 🐶",
+          "",
+          "Do you want to buy it anyway?"
+        ],
+        () => {
+          // Yes: proceed with purchase
+          gameState.bank -= item.price
+          this.bankText.setText(`Bank: $${gameState.bank}`)
+          gameState.addToInventory(item)
+          // Update health/happiness for wants
+          if (gameState.isWant(item.key)) {
+            gameState.updateStat("character", "happiness", 10)
+            gameState.updateStat("character", "health", -3)
+          }
+          this.characterDisplay.updateBars()
+          this.petDisplay.updateBars()
+          icon.setAlpha(0.4)
+          icon.disableInteractive()
+        }
+      )
+      return
+    }
+
+    if (gameState.bank < item.price) {
+      this.showDialogue([`Not enough money to buy ${item.name}.`])
+      return
+    }
 
     gameState.bank -= item.price
     this.bankText.setText(`Bank: $${gameState.bank}`)
@@ -228,5 +266,101 @@ export class DepartmentStoreScene extends Phaser.Scene {
         ).setOrigin(1, 0)
       )
     })
+  }
+
+  // Confirmation dialogue with Yes/No
+  showConfirmDialogue(messages, onYes) {
+    this.confirmDialogueOpen = true
+    this.dialogueMessages = messages
+    this.dialogueIndex = 0
+
+    const centerX = this.cameras.main.centerX
+    const centerY = this.cameras.main.height - 200
+    const boxHeight = 320 // Increased height for better message display
+
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, boxHeight, 0x000000, 0.8)
+    this.dialogueBox.setStrokeStyle(2, 0xffffff)
+
+    this.dialogueText = this.add.text(centerX - 430, centerY - 100, "", {
+      fontSize: "24px",
+      color: "#ffffff",
+      wordWrap: { width: 860 },
+    })
+
+    // Yes/No buttons positioned at bottom right corner of the box
+    const boxBottom = centerY + (boxHeight / 2)
+    const boxRight = centerX + 400 // Positioned near the right edge with padding
+    this.yesButton = this.add.text(boxRight - 60, boxBottom - 30, "Yes", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#228B22"
+    }).setInteractive()
+    this.noButton = this.add.text(boxRight + 20, boxBottom - 30, "No", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#B22222"
+    }).setInteractive()
+
+    this.yesButton.on("pointerdown", () => {
+      this.dialogueBox.destroy()
+      this.dialogueText.destroy()
+      this.yesButton.destroy()
+      this.noButton.destroy()
+      this.confirmDialogueOpen = false
+      onYes()
+    })
+    this.noButton.on("pointerdown", () => {
+      this.dialogueBox.destroy()
+      this.dialogueText.destroy()
+      this.yesButton.destroy()
+      this.noButton.destroy()
+      this.confirmDialogueOpen = false
+    })
+
+    this.dialogueText.setText(this.dialogueMessages.join("\n"))
+  }
+
+  // Dialogue popup
+  showDialogue(messages) {
+    this.dialogueMessages = messages
+    this.dialogueIndex = 0
+
+    const centerX = this.cameras.main.centerX
+    const centerY = this.cameras.main.height - 180
+
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8)
+    this.dialogueBox.setStrokeStyle(2, 0xffffff)
+
+    this.dialogueText = this.add.text(centerX - 430, centerY - 70, "", {
+      fontSize: "24px",
+      color: "#ffffff",
+      wordWrap: { width: 860 },
+    })
+
+    this.nextButton = this.add.text(centerX + 360, centerY + 60, "Next", {
+      fontSize: "24px",
+      color: "#fff",
+      backgroundColor: "#333"
+    }).setInteractive()
+
+    this.nextButton.on("pointerdown", () => {
+      this.nextDialogue()
+    })
+
+    this.nextDialogue()
+  }
+
+  nextDialogue() {
+    if (!this.dialogueMessages) return
+
+    if (this.dialogueIndex >= this.dialogueMessages.length) {
+      this.dialogueBox.destroy()
+      this.dialogueText.destroy()
+      this.nextButton.destroy()
+      return
+    }
+
+    this.dialogueText.setText(this.dialogueMessages[this.dialogueIndex])
+    this.dialogueIndex++
   }
 }
