@@ -10,6 +10,9 @@ export class GroceryScene extends Phaser.Scene {
   preload() {
     this.load.image("shelf", "resources/grocery shelf.png")
 
+    // Load NEXT button image
+    this.load.image("nextButton", "/pictures/NEXT.png")
+
     this.load.spritesheet("girl", "resources/girlchar.png", {
       frameWidth: 32,
       frameHeight: 32,
@@ -112,11 +115,13 @@ export class GroceryScene extends Phaser.Scene {
       })
     })
 
-    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
-      .setInteractive()
-      .on("pointerdown", () => {
-      this.scene.start("DepartmentStoreScene")
-    })
+    // Add NEXT image button in bottom right corner
+    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
+      .setScale(0.22)
+      .setInteractive();
+    nextBtn.on("pointerdown", () => {
+      this.scene.start("DepartmentStoreScene");
+    });
   }
 
   // BUY ITEM FUNCTION
