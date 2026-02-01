@@ -48,6 +48,11 @@ export class ClinicScene extends Phaser.Scene {
       color: "#000000",
     })
 
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
+
   // Helper function to convert health number to level
   const getHealthLevel = (health) => {
     if (health >= 80) return "really good"

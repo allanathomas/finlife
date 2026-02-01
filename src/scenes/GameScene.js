@@ -73,6 +73,11 @@ export class GameScene extends Phaser.Scene {
     nextBtn.on("pointerdown", () => {
       this.scene.start("HomeScene");
     });
+
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
   }
 
   drawBars() {

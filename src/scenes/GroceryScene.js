@@ -60,6 +60,11 @@ export class GroceryScene extends Phaser.Scene {
       color: "#010101",
     })
 
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
+
     // Store items
     this.items = [
       { key: "dogfood", name: "Dog Food", price: 5 },
