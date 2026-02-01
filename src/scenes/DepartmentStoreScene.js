@@ -1,5 +1,6 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
+import { createCharacterDisplay } from "../CharacterDisplay.js"
 
 export class DepartmentStoreScene extends Phaser.Scene {
   constructor() {
@@ -7,7 +8,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("shelf", "resources/depshelf.png")
+    this.load.image("shelf", "resources/depshelf.avif")
 
     this.load.spritesheet("girl", "resources/girlchar.png", {
       frameWidth: 32,
@@ -36,7 +37,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     const { centerX, centerY } = this.cameras.main
 
     // Background
-    const bg = this.add.image(centerX, centerY, "shelf2")
+    const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
     // BANK TEXT (always visible)
@@ -70,6 +71,19 @@ export class DepartmentStoreScene extends Phaser.Scene {
       gameState.currentDeptList = this.generateDeptList(this.items)
     }
     this.drawDeptList()
+
+    // Add character display with bars (below the item list)
+    // List ends around y: 20 + 40 + (5 * 30) = 210 for 6 items
+    // Position character below the list
+    const listEndY = 20 + 40 + (gameState.currentDeptList.length * 30)
+    const characterY = listEndY + 100 + (this.cameras.main.height / 4) // more padding to move character lower
+    this.characterDisplay = createCharacterDisplay(this, {
+      x: this.cameras.main.width - 20 - (this.cameras.main.width / 6), // Aligned with list on right side
+      y: characterY,
+      width: this.cameras.main.width / 3,
+      height: this.cameras.main.height / 2,
+      depth: 20
+    })
 
     // Shelf layout
     const startX = 200
@@ -120,7 +134,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     gameState.addToInventory(item)
 
     gameState.currentDeptList.splice(index, 1)
-    this.drawGroceryList()
+    this.drawDeptList()
 
     // Update health/happiness based on item type
     if (item.key === "dogfood") {
@@ -132,6 +146,8 @@ export class DepartmentStoreScene extends Phaser.Scene {
       gameState.updateStat("character", "happiness", 10)
       gameState.updateStat("character", "health", -3)  // Unhealthy treats
     }
+
+    this.characterDisplay.updateBars()
 
     icon.setAlpha(0.4)
     icon.disableInteractive()
