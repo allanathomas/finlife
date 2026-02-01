@@ -8,6 +8,7 @@ export class GroceryScene extends Phaser.Scene {
   }
 
   preload() {
+      this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("shelf", "resources/grocery shelf.png")
 
     // Load NEXT button image
@@ -43,15 +44,20 @@ export class GroceryScene extends Phaser.Scene {
     const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
+    // Add userFr image (top left corner)
+        this.add.image(100, 45, 'userFr')
+          .setOrigin(0.5)
+          .setScale(0.5, 0.3);
+        
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
     this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#010101",
     })
 
     // Store items
