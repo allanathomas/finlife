@@ -7,6 +7,7 @@ export class HomeScene extends Phaser.Scene {
   }
 
 preload() {
+    this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("home", "/pictures/home.png")
     this.load.image("nextButton", "/pictures/NEXT.png")
 }
@@ -21,29 +22,68 @@ preload() {
     gameState.week += 1
     if ((gameState.week % 2) == 0) gameState.bank += 200
 
+    // Add userFr image (top left corner)
+        this.add.image(100, 45, 'userFr')
+          .setOrigin(0.5)
+          .setScale(0.5, 0.3);
+
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
     this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
-
-    this.showDialogue([
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
+const messages = [
       `Welcome Home!`,
       `It is now week ${gameState.week}, and you have $${gameState.bank}.`,
-    ])
+      ]
+    
+    let next = 1
 
+    // character check
+    if (gameState.character.health <= 0) {
+      next -= 1
+      messages.push("Your health is at 0!")
+      messages.push("Game Over!")
+    } if (gameState.character.happiness <= 0) {
+      next -= 1
+      messages.push("Your happiness is at 0!")
+      messages.push("Game Over!")
+    } if (gameState.pet.happiness <= 0 || gameState.pet.health <= 0) {
+      next -= 1
+      messages.push("Your pet was not taken care of!")
+      messages.push("Game Over!")
+    }
+
+  // show dialogue once
+  this.showDialogue(messages)
+
+    if (next < 1){
     // Add NEXT image button
+    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
+      .setScale(0.22)
+      .setInteractive();
+      gameState.reset()
+    nextBtn.on("pointerdown", () => {
+      this.scene.start("GameScene");
+    });
+    } else {
+      // Add NEXT image button
     const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
       this.scene.start("GroceryScene");
     });
+    }
 
   }
 

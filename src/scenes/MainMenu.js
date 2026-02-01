@@ -19,7 +19,7 @@ export class MainMenu extends Phaser.Scene {
     // Add the finlife logo image instead of text
     this.add.image(this.cameras.main.centerX, this.cameras.main.height * 0.4, 'finlifeLogo')
       .setOrigin(0.5)
-      .setScale(0.95); // Adjust scale as needed for your logo size
+      .setScale(0.95); 
 
     const playButton = this.add.image(this.cameras.main.centerX, this.cameras.main.height * 0.6, 'playButton').setOrigin(0.5).setScale(0.25);
 

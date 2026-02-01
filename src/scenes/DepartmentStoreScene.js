@@ -8,6 +8,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("shelf", "resources/depshelf.avif")
 
     this.load.spritesheet("girl", "resources/girlchar.png", {
@@ -53,6 +54,11 @@ export class DepartmentStoreScene extends Phaser.Scene {
     const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
+    // Add userFr image (top left corner)
+        this.add.image(100, 45, 'userFr')
+          .setOrigin(0.5)
+          .setScale(0.5, 0.3);
+
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
@@ -63,6 +69,11 @@ export class DepartmentStoreScene extends Phaser.Scene {
       fontSize: "22px",
       color: "#000000",
     })
+
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
 
     // Store items
     this.items = [
@@ -198,9 +209,8 @@ export class DepartmentStoreScene extends Phaser.Scene {
     this.characterDisplay.updateBars();
 
     // Update health/happiness based on item type
-    if (item.key === "dogfood") {
-      gameState.updateStat("pet", "health", 10);
-      gameState.updateStat("pet", "happiness", 5);
+    if (item.key === "duck" || item.key == "ducktopus") {
+      gameState.updateStat("pet", "happiness", 15);
     } else if (gameState.isNeed(item.key)) {
       gameState.updateStat("character", "health", 5);
     } else if (gameState.isWant(item.key)) {
