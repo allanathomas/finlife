@@ -31,7 +31,7 @@ export function createCharacterDisplay(scene, options) {
 
   const healthLabel = scene.add.text(x, barAreaTop, "Health", {
     fontSize: "18px",
-    color: "#ffffff",
+    color: "#000000",
   }).setOrigin(0.5, 0).setDepth(depth)
 
   const healthBarBg = scene.add.graphics().setDepth(depth)
@@ -39,7 +39,7 @@ export function createCharacterDisplay(scene, options) {
 
   const happinessLabel = scene.add.text(x, barAreaTop + 22 + barHeight + 8, "Happiness", {
     fontSize: "18px",
-    color: "#ffffff",
+    color: "#000000",
   }).setOrigin(0.5, 0).setDepth(depth)
 
   const happinessBarBg = scene.add.graphics().setDepth(depth)

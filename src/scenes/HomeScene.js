@@ -1,5 +1,7 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
+import { createCharacterDisplay } from "../CharacterDisplay.js"
+import { createPetDisplay } from "../PetDisplay.js"
 
 export class HomeScene extends Phaser.Scene {
   constructor() {
@@ -18,6 +20,9 @@ preload() {
     this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("home", "/pictures/home.png")
     this.load.image("nextButton", "/pictures/NEXT.png")
+    this.load.spritesheet("girl", "resources/girlchar.png", { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet("boy", "resources/boychar.png", { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet("dog", "resources/dog.png", { frameWidth: 32, frameHeight: 32 })
 }
 
   create() {
@@ -59,6 +64,33 @@ preload() {
       fontSize: "22px",
       color: "#000000",
     })
+
+    // Add character display with bars (right side, same as grocery/dept store)
+    const characterX = this.cameras.main.width - 20 - (this.cameras.main.width / 6)
+    const characterY = 200 + 100 + (this.cameras.main.height / 4)
+    const charScale = 0.9
+    const baseCharacterWidth = this.cameras.main.width / 3
+    const baseCharacterHeight = this.cameras.main.height / 2
+    const characterWidth = baseCharacterWidth * charScale
+    const characterHeight = baseCharacterHeight * charScale
+    this.characterDisplay = createCharacterDisplay(this, {
+      x: characterX,
+      y: characterY,
+      width: characterWidth,
+      height: characterHeight,
+      depth: 20
+    })
+    const petScale = 0.4
+    const petX = characterX + 170
+    const petY = characterY + 130
+    this.petDisplay = createPetDisplay(this, {
+      x: petX,
+      y: petY,
+      width: characterWidth * petScale,
+      height: characterHeight * petScale,
+      depth: 20
+    })
+
     // Escape key to return to MainMenu
     this.input.keyboard.on('keydown-ESC', () => {
       this.scene.start('MainMenu');

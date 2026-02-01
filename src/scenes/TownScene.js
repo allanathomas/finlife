@@ -1,6 +1,7 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
 import { createCharacterDisplay } from "../CharacterDisplay.js"
+import { createPetDisplay } from "../PetDisplay.js"
 import { createPiggyDisplay } from "../PiggyDisplay.js"
 
 export class TownScene extends Phaser.Scene {
@@ -16,6 +17,9 @@ export class TownScene extends Phaser.Scene {
       this.load.image("houseButton", "resources/house.png")
       this.load.image("departmButton", "resources/departmIcon.png")
       this.load.image("piggy", "pictures/piggy.png")
+      this.load.spritesheet("girl", "resources/girlchar.png", { frameWidth: 32, frameHeight: 32 })
+      this.load.spritesheet("boy", "resources/boychar.png", { frameWidth: 32, frameHeight: 32 })
+      this.load.spritesheet("dog", "resources/dog.png", { frameWidth: 32, frameHeight: 32 })
     }
 
     create() {
@@ -49,6 +53,32 @@ export class TownScene extends Phaser.Scene {
         balanceTextY: 40,
         onBalanceChange: () => this.bankText?.setText(`Bank: $${gameState.bank}`),
       });
+
+      // Add character display with bars (centered along x-axis, 20 lower and 20 right)
+      const characterX = centerX - 85 + 20  // Offset so character+pet pair is centered, then 20 right
+      const characterY = 350 + 100 + (this.cameras.main.height / 4) + 20
+      const charScale = 0.7
+      const baseCharacterWidth = this.cameras.main.width / 3
+      const baseCharacterHeight = this.cameras.main.height / 2
+      const characterWidth = baseCharacterWidth * charScale
+      const characterHeight = baseCharacterHeight * charScale
+      this.characterDisplay = createCharacterDisplay(this, {
+        x: characterX,
+        y: characterY,
+        width: characterWidth,
+        height: characterHeight,
+        depth: 20
+      })
+      const petScale = 0.4
+      const petX = characterX + 170
+      const petY = characterY + 130
+      this.petDisplay = createPetDisplay(this, {
+        x: petX,
+        y: petY,
+        width: characterWidth * petScale,
+        height: characterHeight * petScale,
+        depth: 20
+      })
 
       // Add interactive buttons
       // Clinic Button

@@ -42,7 +42,7 @@ export function createPetDisplay(scene, options) {
 
   const healthLabel = scene.add.text(x, barAreaTop, "Health", {
     fontSize: "14px",
-    color: "#ffffff",
+    color: "#000000",
   }).setOrigin(0.5, 0).setDepth(depth)
 
   const healthBarBg = scene.add.graphics().setDepth(depth)
@@ -50,7 +50,7 @@ export function createPetDisplay(scene, options) {
 
   const happinessLabel = scene.add.text(x, barAreaTop + 18 + barHeight + 6, "Happiness", {
     fontSize: "14px",
-    color: "#ffffff",
+    color: "#000000",
   }).setOrigin(0.5, 0).setDepth(depth)
 
   const happinessBarBg = scene.add.graphics().setDepth(depth)

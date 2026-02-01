@@ -1,5 +1,7 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
+import { createCharacterDisplay } from "../CharacterDisplay.js"
+import { createPetDisplay } from "../PetDisplay.js"
 
 export class GameScene extends Phaser.Scene {
   constructor() {
@@ -13,6 +15,9 @@ export class GameScene extends Phaser.Scene {
     this.load.image("townBG", "/pictures/town.png")
     this.load.image("nextButton", "/pictures/NEXT.png")
     this.load.image("userFr", "/pictures/userFr.png")
+    this.load.spritesheet("girl", "resources/girlchar.png", { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet("boy", "resources/boychar.png", { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet("dog", "resources/dog.png", { frameWidth: 32, frameHeight: 32 })
   }
 
   init(data) {
@@ -40,6 +45,33 @@ export class GameScene extends Phaser.Scene {
     this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
       fontSize: "22px",
       color: "#000000",
+    })
+
+    // Add character display with bars (150 higher, 400 left of center)
+    const centerX = this.cameras.main.centerX
+    const characterX = centerX - 85 - 350
+    const characterY = 250 + 100 + (this.cameras.main.height / 4) - 150
+    const charScale = 0.9
+    const baseCharacterWidth = this.cameras.main.width / 3
+    const baseCharacterHeight = this.cameras.main.height / 2
+    const characterWidth = baseCharacterWidth * charScale
+    const characterHeight = baseCharacterHeight * charScale
+    this.characterDisplay = createCharacterDisplay(this, {
+      x: characterX,
+      y: characterY,
+      width: characterWidth,
+      height: characterHeight,
+      depth: 20
+    })
+    const petScale = 0.4
+    const petX = characterX + 170
+    const petY = characterY + 130
+    this.petDisplay = createPetDisplay(this, {
+      x: petX,
+      y: petY,
+      width: characterWidth * petScale,
+      height: characterHeight * petScale,
+      depth: 20
     })
 
     // Salary event
