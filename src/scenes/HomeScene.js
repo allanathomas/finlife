@@ -37,6 +37,10 @@ preload() {
       fontSize: "22px",
       color: "#000000",
     })
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
 const messages = [
       `Welcome Home!`,
       `It is now week ${gameState.week}, and you have $${gameState.bank}.`,

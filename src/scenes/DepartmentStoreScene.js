@@ -70,6 +70,11 @@ export class DepartmentStoreScene extends Phaser.Scene {
       color: "#000000",
     })
 
+    // Escape key to return to MainMenu
+    this.input.keyboard.on('keydown-ESC', () => {
+      this.scene.start('MainMenu');
+    });
+
     // Store items
     this.items = [
       { key: "bandages", name: "Bandages", price: 7 },
