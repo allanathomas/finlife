@@ -145,16 +145,19 @@ export class GroceryScene extends Phaser.Scene {
         return;
       }
       const left = gameState.bank - item.price;
-        this.showConfirmDialogue(
-          [
-            `${item.name} is not on your grocery list.`,
-            `If you buy this, you will spend $${item.price}.`,
-            `You will have $${left} left in your bank.`,
-            "",
-            `Remember: If you use your money for treats or toys now, you might not have enough or things you really need later,`,
-            `like food for you or your pet!`,
-            `Do you still want to buy this?`
-          ],
+      this.showConfirmDialogue(
+            [
+              "Oops! This item isn’t on your list.",
+              "",
+              `It costs $${item.price}.`,
+              "You’ll have less money after buying it.",
+              "",
+              "If you buy this item now, you might not have enough money later",
+              "for important things — like food for you or your pet 🐶",
+              "",
+              "Do you want to buy it anyway?"
+            ],
+          
         () => {
           // Yes: proceed with purchase
           gameState.bank -= item.price;
@@ -213,8 +216,9 @@ export class GroceryScene extends Phaser.Scene {
 
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.height - 200;
+    const boxHeight = 320; // Increased height for better message display
 
-    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, boxHeight, 0x000000, 0.8);
     this.dialogueBox.setStrokeStyle(2, 0xffffff);
 
     this.dialogueText = this.add.text(centerX - 430, centerY - 100, "", {
@@ -223,13 +227,15 @@ export class GroceryScene extends Phaser.Scene {
       wordWrap: { width: 860 },
     });
 
-    // Yes/No buttons
-    this.yesButton = this.add.text(centerX + 200, centerY + 60, "Yes", {
+    // Yes/No buttons positioned at bottom right corner of the box
+    const boxBottom = centerY + (boxHeight / 2);
+    const boxRight = centerX + 400; // Positioned near the right edge with padding
+    this.yesButton = this.add.text(boxRight - 60, boxBottom - 30, "Yes", {
       fontSize: "24px",
       color: "#fff",
       backgroundColor: "#228B22"
     }).setInteractive();
-    this.noButton = this.add.text(centerX + 300, centerY + 60, "No", {
+    this.noButton = this.add.text(boxRight + 20, boxBottom - 30, "No", {
       fontSize: "24px",
       color: "#fff",
       backgroundColor: "#B22222"
