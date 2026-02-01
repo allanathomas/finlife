@@ -56,7 +56,7 @@ export class TownScene extends Phaser.Scene {
 
       // Add character display with bars (centered along x-axis, 20 lower and 20 right)
       const characterX = centerX - 85 + 20  // Offset so character+pet pair is centered, then 20 right
-      const characterY = 350 + 100 + (this.cameras.main.height / 4) + 20
+      const characterY = 250 + 100 + (this.cameras.main.height / 4) + 20
       const charScale = 0.7
       const baseCharacterWidth = this.cameras.main.width / 3
       const baseCharacterHeight = this.cameras.main.height / 2

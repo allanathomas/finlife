@@ -50,7 +50,7 @@ export class GameScene extends Phaser.Scene {
     // Add character display with bars (150 higher, 400 left of center)
     const centerX = this.cameras.main.centerX
     const characterX = centerX - 85 - 350
-    const characterY = 250 + 100 + (this.cameras.main.height / 4) - 150
+    const characterY = 200 + 100 + (this.cameras.main.height / 4) - 150
     const charScale = 0.9
     const baseCharacterWidth = this.cameras.main.width / 3
     const baseCharacterHeight = this.cameras.main.height / 2
