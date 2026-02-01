@@ -1,6 +1,7 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
 import { createCharacterDisplay } from "../CharacterDisplay.js"
+import { createPetDisplay } from "../PetDisplay.js"
 
 export class GroceryScene extends Phaser.Scene {
   constructor() {
@@ -23,6 +24,10 @@ export class GroceryScene extends Phaser.Scene {
       frameHeight: 32,
     })
 
+    this.load.spritesheet("dog", "resources/dog.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
     this.load.image("dogfood", "Icons/canned_soup.png")
     this.load.image("cheese", "Icons/cheese_mozzarella.png")
     this.load.image("eggs", "Icons/eggs_brown.png")
@@ -45,6 +50,7 @@ export class GroceryScene extends Phaser.Scene {
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
     // Add userFr image (top left corner)
+    // Add userFr image (to display the character) left corner)
         this.add.image(100, 45, 'userFr')
           .setOrigin(0.5)
           .setScale(0.5, 0.3);
@@ -92,11 +98,30 @@ export class GroceryScene extends Phaser.Scene {
     // Position character below the list
     const listEndY = 20 + 40 + (gameState.currentGroceryList.length * 30)
     const characterY = listEndY + 100 + (this.cameras.main.height / 4) // more padding to move character lower
+    const characterX = this.cameras.main.width - 20 - (this.cameras.main.width / 6) // Aligned with list on right side
+    const charScale = 0.9 // Scale factor for character size
+    const baseCharacterWidth = this.cameras.main.width / 3
+    const baseCharacterHeight = this.cameras.main.height / 2
+    const characterWidth = baseCharacterWidth * charScale
+    const characterHeight = baseCharacterHeight * charScale
+    
     this.characterDisplay = createCharacterDisplay(this, {
-      x: this.cameras.main.width - 20 - (this.cameras.main.width / 6), // Aligned with list on right side
+      x: characterX,
       y: characterY,
-      width: this.cameras.main.width / 3,
-      height: this.cameras.main.height / 2,
+      width: characterWidth,
+      height: characterHeight,
+      depth: 20
+    })
+
+    // Add pet display next to the character (to the right), proportional size
+    const petScale = 0.4 // Scale factor to maintain proportions
+    const petX = characterX + 170// 20 pixels to the right of character
+    const petY = characterY + 130 // 50 pixels lower than character
+    this.petDisplay = createPetDisplay(this, {
+      x: petX,
+      y: petY,
+      width: characterWidth * petScale,
+      height: characterHeight * petScale,
       depth: 20
     })
 
@@ -180,6 +205,7 @@ export class GroceryScene extends Phaser.Scene {
             gameState.updateStat("character", "health", -3);
           }
           this.characterDisplay.updateBars();
+          this.petDisplay.updateBars();
           icon.setAlpha(0.4);
           icon.disableInteractive();
         }
@@ -214,6 +240,7 @@ export class GroceryScene extends Phaser.Scene {
     }
 
     this.characterDisplay.updateBars();
+    this.petDisplay.updateBars();
 
     icon.setAlpha(0.4);
     icon.disableInteractive();
