@@ -39,27 +39,34 @@ export class ClinicScene extends Phaser.Scene {
       color: "#000000",
     })
 
+  // Helper function to convert health number to level
+  const getHealthLevel = (health) => {
+    if (health >= 80) return "really good"
+    if (health >= 60) return "fairlygood"
+    return "not so good"; 
+  }
+
   const messages = [
     `Welcome to the clinic.`,
-    `Your health is at ${gameState.character.health}.`,
+    `Your health is ${getHealthLevel(gameState.character.health)}.`,
   ]
 
   // character check
   if (gameState.character.health < 50) {
-    messages.push("You are sick!")
-    messages.push("You need to pay $30.")
+    messages.push("You need to see a doctor!")
+    messages.push("You have to pay $30 for the visit.")
     gameState.character.health += 40
     gameState.bank -= 30
   } else {
-    messages.push("You are healthy!")
+    messages.push("You are very healthy!")
   }
 
   // pet check
-  messages.push(`Your pet's health is at ${gameState.pet.health}.`)
+  messages.push(`Your pet's health is at ${getHealthLevel(gameState.pet.health)} level.`)
 
   if (gameState.pet.health < 50) {
     messages.push("Your pet is sick!")
-    messages.push("You need to pay $40.")
+    messages.push("You need to pay $40 for the pet care.")
     gameState.pet.health += 40
     gameState.bank -= 40
   } else {
