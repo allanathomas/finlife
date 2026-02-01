@@ -42,7 +42,7 @@ export class ClinicScene extends Phaser.Scene {
   // Helper function to convert health number to level
   const getHealthLevel = (health) => {
     if (health >= 80) return "really good"
-    if (health >= 60) return "fairlygood"
+    if (health >= 50) return "fairlygood"
     return "not so good"; 
   }
 
