@@ -67,24 +67,24 @@ export class ClinicScene extends Phaser.Scene {
 
   // character check
   if (gameState.character.health < 50) {
-    messages.push("You need to see a doctor!")
-    messages.push("You have to pay $30 for the visit.")
+    messages.push("Time for a check-up! Let's get you feeling 100% again.")
+    messages.push("A quick trip to the doctor for $30 will get you back on your feet! 🩺")
     gameState.character.health += 40
     gameState.bank -= 30
   } else {
-    messages.push("You are very healthy!")
+    messages.push("Great job! Your healthy choices are paying off! 💪")
   }
 
   // pet check
   messages.push(`Your pet's health is at ${getHealthLevel(gameState.pet.health)} level.`)
-
+  // 
   if (gameState.pet.health < 50) {
-    messages.push("Your pet is sick!")
-    messages.push("You need to pay $40 for the pet care.")
+    messages.push("Oh no! Your pet is feeling under the weather.")
+    messages.push("Let’s head to the Vet to get them some medicine for $40. 🐾")
     gameState.pet.health += 40
     gameState.bank -= 40
   } else {
-    messages.push("Your pet is healthy!")
+    messages.push("Your pet is so happy and healthy! Good job, owner! 🐶")
   }
 
   // show dialogue once

@@ -316,17 +316,23 @@ export class GroceryScene extends Phaser.Scene {
   }
 
   generateGroceryList(items) {
-    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 6)
+    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 4)
   }
 
   drawGroceryList() {
     if (this.groceryTexts) {
       this.groceryTexts.forEach(t => t.destroy())
     }
+    if (this.groceryIcons) {
+      this.groceryIcons.forEach(i => i.destroy())
+    }
     this.groceryTexts = []
+    this.groceryIcons = []
 
     const x = this.cameras.main.width - 20
     const y = 20
+    const iconSize = 32
+    const iconOffset = 150 // Increased offset for more space to the left
 
     this.groceryTexts.push(
       this.add.text(x, y, "Grocery List", {
@@ -336,14 +342,22 @@ export class GroceryScene extends Phaser.Scene {
       }).setOrigin(1, 0)
     )
 
+    const lineSpacing = 40;
     gameState.currentGroceryList.forEach((item, index) => {
       // Use gameState helper to check need vs want
       const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
-
+      // Draw icon to the left of the text
+      const iconY = y + 40 + index * lineSpacing + iconSize / 2
+      const iconX = x - iconOffset
+      this.groceryIcons.push(
+        this.add.image(iconX, iconY, item.key)
+          .setOrigin(1, 0.5)
+          .setDisplaySize(iconSize, iconSize)
+      )
       this.groceryTexts.push(
         this.add.text(
           x,
-          y + 40 + index * 30,
+          y + 40 + index * lineSpacing,
           `${item.name} - $${item.price}`,
           { fontSize: "20px", color, backgroundColor: "#ffffff" }
         ).setOrigin(1, 0)

@@ -58,6 +58,9 @@ export class TownScene extends Phaser.Scene {
         this.scene.start('DepartmentStoreScene');
       });
 
+      // Non-interactive House Icon (for display only)
+      this.add.image(centerX - 600, centerY + 80, 'houseButton').setScale(1.5).setAlpha(0.85);
+
       // Escape key to return to MainMenu
       this.input.keyboard.on('keydown-ESC', () => {
         this.scene.start('MainMenu');

@@ -6,6 +6,14 @@ export class HomeScene extends Phaser.Scene {
     super("HomeScene")
   }
 
+  // Track starting money for the week
+  init() {
+    // If not set, set startingBank for the week
+    if (gameState.startingBank === undefined || gameState.week === 0) {
+      gameState.startingBank = gameState.bank;
+    }
+  }
+
 preload() {
     this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("home", "/pictures/home.png")
@@ -19,8 +27,21 @@ preload() {
     const bg = this.add.image(centerX, centerY, "home")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
-    gameState.week += 1
-    if ((gameState.week % 2) == 0) gameState.bank += 200
+
+    // Save last week's starting bank for reward check
+    if (gameState.week >= 0 && gameState.startingBank !== undefined) {
+      // Only check if not first week
+      if (gameState.bank >= gameState.startingBank / 2 && gameState.week > 0) {
+        // Give bonus and show popup
+        gameState.bank += 50;
+        this.showSavingReward();
+      }
+    }
+
+    gameState.week += 1;
+    if ((gameState.week % 2) == 0) gameState.bank += 200;
+    // Set new starting bank for this week
+    gameState.startingBank = gameState.bank;
 
     // Add userFr image (top left corner)
         this.add.image(100, 45, 'userFr')
@@ -43,7 +64,7 @@ preload() {
     });
 const messages = [
       `Welcome Home!`,
-      `It is now week ${gameState.week}, and you have $${gameState.bank}.`,
+      `It is now week ${gameState.week}, and you have saved $${gameState.bank} in your piggy bank. Remember: Every week is a shopping week!`,
       ]
     
     let next = 1
@@ -112,6 +133,33 @@ const messages = [
     })
 
     this.nextDialogue()
+  }
+
+  showSavingReward() {
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.height / 2;
+    const box = this.add.rectangle(centerX, centerY, 700, 250, 0x4caf50, 0.95);
+    box.setStrokeStyle(4, 0xffffff);
+    const text = this.add.text(centerX - 320, centerY - 90,
+      "Congratulations!\n\nYou saved at least half of your money this week!\n\nSaving means putting some money aside instead of spending it all, so you can use it for something important or fun in the future.",
+      {
+        fontSize: "28px",
+        color: "#ffffff",
+        wordWrap: { width: 650 },
+      }
+    );
+    const okBtn = this.add.text(centerX, centerY + 70, "OK", {
+      fontSize: "32px",
+      color: "#000",
+      backgroundColor: "#fff",
+      padding: { left: 30, right: 30, top: 10, bottom: 10 },
+      borderRadius: 10,
+    }).setOrigin(0.5).setInteractive();
+    okBtn.on("pointerdown", () => {
+      box.destroy();
+      text.destroy();
+      okBtn.destroy();
+    });
   }
 
   nextDialogue() {
