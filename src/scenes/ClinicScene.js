@@ -7,6 +7,7 @@ export class ClinicScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("clinic", "pictures/clinic.png")
     this.load.image("nextButton", "/pictures/NEXT.png")
 
@@ -27,6 +28,11 @@ export class ClinicScene extends Phaser.Scene {
     // Background
     const bg = this.add.image(centerX, centerY, "clinic")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+
+    // Add userFr image (top left corner)
+        this.add.image(100, 45, 'userFr')
+          .setOrigin(0.5)
+          .setScale(0.5, 0.3);
 
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {

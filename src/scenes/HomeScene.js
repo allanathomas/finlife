@@ -7,6 +7,7 @@ export class HomeScene extends Phaser.Scene {
   }
 
 preload() {
+    this.load.image("userFr", "/pictures/userFr.png");
     this.load.image("home", "/pictures/home.png")
     this.load.image("nextButton", "/pictures/NEXT.png")
 }
@@ -21,15 +22,20 @@ preload() {
     gameState.week += 1
     if ((gameState.week % 2) == 0) gameState.bank += 200
 
+    // Add userFr image (top left corner)
+        this.add.image(100, 45, 'userFr')
+          .setOrigin(0.5)
+          .setScale(0.5, 0.3);
+
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
     this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
     this.showDialogue([
