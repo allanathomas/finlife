@@ -1,5 +1,6 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
+import { createCharacterDisplay } from "../CharacterDisplay.js"
 
 export class GroceryScene extends Phaser.Scene {
   constructor() {
@@ -74,6 +75,19 @@ export class GroceryScene extends Phaser.Scene {
       gameState.currentGroceryList = this.generateGroceryList(this.items)
     }
     this.drawGroceryList()
+
+    // Add character display with bars (below the grocery list)
+    // List ends around y: 20 + 40 + (5 * 30) = 210 for 6 items
+    // Position character below the list
+    const listEndY = 20 + 40 + (gameState.currentGroceryList.length * 30)
+    const characterY = listEndY + 100 + (this.cameras.main.height / 4) // more padding to move character lower
+    this.characterDisplay = createCharacterDisplay(this, {
+      x: this.cameras.main.width - 20 - (this.cameras.main.width / 6), // Aligned with list on right side
+      y: characterY,
+      width: this.cameras.main.width / 3,
+      height: this.cameras.main.height / 2,
+      depth: 20
+    })
 
     // Shelf layout
     const startX = 200
