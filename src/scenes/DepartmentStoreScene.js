@@ -1,6 +1,8 @@
 import Phaser from "phaser"
 import { gameState } from "../GameState.js"
 import { createCharacterDisplay } from "../CharacterDisplay.js"
+import { createPetDisplay } from "../PetDisplay.js"
+
 
 export class DepartmentStoreScene extends Phaser.Scene {
   constructor() {
@@ -8,14 +10,19 @@ export class DepartmentStoreScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("userFr", "/pictures/userFr.png");
+    this.load.image("userFr", "/pictures/userFr.png")
     this.load.image("shelf", "resources/depshelf.avif")
+    this.load.image("nextButton", "/pictures/NEXT.png")
 
     this.load.spritesheet("girl", "resources/girlchar.png", {
       frameWidth: 32,
       frameHeight: 32,
     })
     this.load.spritesheet("boy", "resources/boychar.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
+        this.load.spritesheet("dog", "resources/dog.png", {
       frameWidth: 32,
       frameHeight: 32,
     })
@@ -36,19 +43,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
 
   create() {
     const { centerX, centerY } = this.cameras.main
-
-    gameState.currentGroceryList.forEach((item) => {
-      if (gameState.needItems.includes(item.key)) {
-        if (item == "dogfood") {
-          gameState.pet.health -= 20
-        } else {
-          gameState.character.health -= 10
-        }
-      }
-      if (gameState.wantItems.includes(item.key)) {
-        gameState.character.happiness -= 10
-      }
-    })
 
     // Background
     const bg = this.add.image(centerX, centerY, "shelf")

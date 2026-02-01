@@ -1,48 +1,55 @@
 import { gameState } from "./GameState.js"
 
 /**
- * Adds the selected character with Health and Happiness bars above it.
- * Call from any scene after character sprites (girl, boy) are loaded.
+ * Adds the pet with Health and Happiness bars above it.
+ * Call from any scene after pet spritesheet is loaded.
  *
  * @param {Phaser.Scene} scene - The Phaser scene to add the display to
  * @param {Object} options - Position and size
- * @param {number} options.x - Center X of the character
- * @param {number} options.y - Center Y of the character
- * @param {number} options.width - Display width of the character
- * @param {number} options.height - Display height of the character
+ * @param {number} options.x - Center X of the pet
+ * @param {number} options.y - Center Y of the pet
+ * @param {number} options.width - Display width of the pet
+ * @param {number} options.height - Display height of the pet
  * @param {number} [options.depth=10] - Render depth
  * @returns {{ sprite: Phaser.GameObjects.Sprite, updateBars: () => void, destroy: () => void }}
  */
-export function createCharacterDisplay(scene, options) {
+export function createPetDisplay(scene, options) {
   const { x, y, width, height, depth = 10 } = options
 
-  const charType = gameState.character?.type ?? "A"
-  const spriteKey = charType === "A" ? "girl" : "boy"
+  // Create animation if it doesn't exist
+  if (!scene.anims.exists("dogIdle")) {
+    scene.anims.create({
+      key: "dogIdle",
+      frames: scene.anims.generateFrameNumbers("dog", { start: 0, end: 1 }),
+      frameRate: 5,
+      repeat: -1,
+    })
+  }
 
-  const sprite = scene.add.sprite(x, y, spriteKey, 0)
+  // Create sprite - use sprite key and initial frame
+  const sprite = scene.add.sprite(x, y, "dog", 0)
     .setDisplaySize(width, height)
     .setOrigin(0.5, 0.5)
     .setDepth(depth)
+  
+  // Play animation
+  sprite.play("dogIdle")
 
-<<<<<<< HEAD
   const barWidth = width * 0.7
-=======
-  const barWidth = width * 0.56 // 20% shorter than original (0.7 * 0.8 = 0.56)
->>>>>>> main
-  const barHeight = 16
+  const barHeight = 12
   const barLeft = x - barWidth / 2
-  const barAreaTop = y - height / 2 - 70
+  const barAreaTop = y - height / 2 - 50
 
   const healthLabel = scene.add.text(x, barAreaTop, "Health", {
-    fontSize: "18px",
+    fontSize: "14px",
     color: "#ffffff",
   }).setOrigin(0.5, 0).setDepth(depth)
 
   const healthBarBg = scene.add.graphics().setDepth(depth)
   const healthBarFill = scene.add.graphics().setDepth(depth)
 
-  const happinessLabel = scene.add.text(x, barAreaTop + 22 + barHeight + 8, "Happiness", {
-    fontSize: "18px",
+  const happinessLabel = scene.add.text(x, barAreaTop + 18 + barHeight + 6, "Happiness", {
+    fontSize: "14px",
     color: "#ffffff",
   }).setOrigin(0.5, 0).setDepth(depth)
 
@@ -50,24 +57,24 @@ export function createCharacterDisplay(scene, options) {
   const happinessBarFill = scene.add.graphics().setDepth(depth)
 
   function drawBars() {
-    const health = gameState.character.health
-    const happiness = gameState.character.happiness
+    const health = gameState.pet.health
+    const happiness = gameState.pet.happiness
 
     healthBarBg.clear()
     healthBarBg.fillStyle(0x555555)
-    healthBarBg.fillRect(barLeft, barAreaTop + 22, barWidth, barHeight)
+    healthBarBg.fillRect(barLeft, barAreaTop + 18, barWidth, barHeight)
 
     healthBarFill.clear()
     healthBarFill.fillStyle(0xff0000)
-    healthBarFill.fillRect(barLeft, barAreaTop + 22, barWidth * (health / 100), barHeight)
+    healthBarFill.fillRect(barLeft, barAreaTop + 18, barWidth * (health / 100), barHeight)
 
     happinessBarBg.clear()
     happinessBarBg.fillStyle(0x555555)
-    happinessBarBg.fillRect(barLeft, barAreaTop + 22 + barHeight + 8 + 22, barWidth, barHeight)
+    happinessBarBg.fillRect(barLeft, barAreaTop + 18 + barHeight + 6 + 18, barWidth, barHeight)
 
     happinessBarFill.clear()
     happinessBarFill.fillStyle(0xffff00)
-    happinessBarFill.fillRect(barLeft, barAreaTop + 22 + barHeight + 8 + 22, barWidth * (happiness / 100), barHeight)
+    happinessBarFill.fillRect(barLeft, barAreaTop + 18 + barHeight + 6 + 18, barWidth * (happiness / 100), barHeight)
   }
 
   drawBars()
@@ -85,8 +92,4 @@ export function createCharacterDisplay(scene, options) {
       happinessBarFill.destroy()
     },
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> main
