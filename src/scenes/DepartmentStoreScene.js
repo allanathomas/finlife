@@ -36,6 +36,19 @@ export class DepartmentStoreScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main
 
+    gameState.currentGroceryList.forEach((item) => {
+      if (gameState.needItems.includes(item.key)) {
+        if (item == "dogfood") {
+          gameState.pet.health -= 20
+        } else {
+          gameState.character.health -= 10
+        }
+      }
+      if (gameState.wantItems.includes(item.key)) {
+        gameState.character.happiness -= 10
+      }
+    })
+
     // Background
     const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
@@ -138,17 +151,6 @@ export class DepartmentStoreScene extends Phaser.Scene {
     gameState.currentDeptList.splice(index, 1)
     this.drawDeptList()
 
-    // Update health/happiness based on item type
-    if (item.key === "dogfood") {
-      gameState.updateStat("pet", "health", 10)
-      gameState.updateStat("pet", "happiness", 5)
-    } else if (gameState.isNeed(item.key)) {
-      gameState.updateStat("character", "health", 5)
-    } else if (gameState.isWant(item.key)) {
-      gameState.updateStat("character", "happiness", 10)
-      gameState.updateStat("character", "health", -3)  // Unhealthy treats
-    }
-
     this.characterDisplay.updateBars()
 
     icon.setAlpha(0.4)
@@ -169,7 +171,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     const y = 20
 
     this.deptTexts.push(
-      this.add.text(x, y, "Grocery List", {
+      this.add.text(x, y, "Department List", {
         fontSize: "24px",
         color: "#000000",
         backgroundColor: "#ffffff"
