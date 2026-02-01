@@ -27,7 +27,7 @@ export class ClinicScene extends Phaser.Scene {
       if (item == "duck" || item == "ducktopus") {
         gameState.pet.happiness -= 10
       }
-      if (gameState.wantItems.includes(item.key)) {
+      if (!gameState.isNeed(item.key)) {
         gameState.character.happiness -= 10
       }
     })
@@ -101,6 +101,7 @@ export class ClinicScene extends Phaser.Scene {
     messages.push("A quick trip to the doctor for $30 will get you back on your feet! 🩺")
     gameState.character.health += 40
     gameState.bank -= 30
+    this.bankText.setText(`Bank: $${gameState.bank}`)
   } else {
     messages.push("Great job! Your healthy choices are paying off! 💪")
   }
@@ -113,6 +114,7 @@ export class ClinicScene extends Phaser.Scene {
     messages.push("Let’s head to the Vet to get them some medicine for $40. 🐾")
     gameState.pet.health += 40
     gameState.bank -= 40
+    this.bankText.setText(`Bank: $${gameState.bank}`)
   } else {
     messages.push("Your pet is so happy and healthy! Good job, owner! 🐶")
   }

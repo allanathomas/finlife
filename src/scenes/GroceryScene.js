@@ -158,8 +158,18 @@ export class GroceryScene extends Phaser.Scene {
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
+      // Health penalty: -2 per unpurchased needed item on grocery list
+      const unpurchasedNeeded = gameState.currentGroceryList.filter(i => gameState.isNeed(i.key))
+      const healthPenalty = 5 * unpurchasedNeeded.length
+      gameState.updateStat("character", "health", -healthPenalty)
       this.scene.start("DepartmentStoreScene");
     });
+  }
+
+  update() {
+    // Keep bars in sync with gameState every frame
+    this.characterDisplay?.updateBars()
+    this.petDisplay?.updateBars()
   }
 
   // BUY ITEM FUNCTION
@@ -199,10 +209,15 @@ export class GroceryScene extends Phaser.Scene {
           gameState.bank -= item.price;
           this.bankText.setText(`Bank: $${gameState.bank}`);
           gameState.addToInventory(item);
-          // Update health/happiness for wants
-          if (gameState.isWant(item.key)) {
-            gameState.updateStat("character", "happiness", 10);
-            gameState.updateStat("character", "health", -3);
+          // Update health/happiness based on item type (same as on-list purchase)
+          if (item.key === "dogfood") {
+            gameState.updateStat("pet", "health", 10);
+            gameState.updateStat("pet", "happiness", 5);
+          } else if (gameState.needItems.includes(item.key)) {
+            // Needed item: no health change (buying groceries doesn't affect character health bar)
+          } else {
+            // Not needed item: happiness +3 only (health not affected)
+            gameState.updateStat("character", "happiness", 3);
           }
           this.characterDisplay.updateBars();
           this.petDisplay.updateBars();
@@ -232,11 +247,11 @@ export class GroceryScene extends Phaser.Scene {
     if (item.key === "dogfood") {
       gameState.updateStat("pet", "health", 10);
       gameState.updateStat("pet", "happiness", 5);
-    } else if (gameState.isNeed(item.key)) {
-      gameState.updateStat("character", "health", 5);
-    } else if (gameState.isWant(item.key)) {
-      gameState.updateStat("character", "happiness", 10);
-      gameState.updateStat("character", "health", -3);  // Unhealthy treats
+    } else if (gameState.needItems.includes(item.key)) {
+      // Needed item: no health change (buying groceries doesn't affect character health bar)
+    } else {
+      // Not needed item: happiness +3 only (health not affected)
+      gameState.updateStat("character", "happiness", 3);
     }
 
     this.characterDisplay.updateBars();

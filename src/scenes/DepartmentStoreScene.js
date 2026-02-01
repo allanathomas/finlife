@@ -11,6 +11,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
   preload() {
     this.load.image("shelf", "resources/depshelf.avif")
     this.load.image("nextButton", "/pictures/NEXT.png")
+    this.load.image("userFr", "/pictures/userFr.png")
 
     this.load.spritesheet("girl", "resources/girlchar.png", {
       frameWidth: 32,
@@ -45,6 +46,11 @@ export class DepartmentStoreScene extends Phaser.Scene {
     // Background
     const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+
+    // Add userFr frame (top left corner) - uniform scale to avoid distortion
+    this.add.image(100, 45, "userFr")
+      .setOrigin(0.5)
+      .setScale(0.4)
 
     // BANK TEXT (always visible)
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
@@ -143,10 +149,20 @@ export class DepartmentStoreScene extends Phaser.Scene {
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
+      // Health penalty: -2 per unpurchased needed item on department list
+      const unpurchasedNeeded = gameState.currentDeptList.filter(i => gameState.isNeed(i.key))
+      const healthPenalty = 5 * unpurchasedNeeded.length
+      gameState.updateStat("character", "health", -healthPenalty)
       // Clear the department list so a new one is generated next time
       gameState.currentDeptList = []
       this.scene.start("ClinicScene");
     });
+  }
+
+  update() {
+    // Keep bars in sync with gameState every frame
+    this.characterDisplay?.updateBars()
+    this.petDisplay?.updateBars()
   }
 
   // BUY ITEM FUNCTION
@@ -186,10 +202,16 @@ export class DepartmentStoreScene extends Phaser.Scene {
           gameState.bank -= item.price
           this.bankText.setText(`Bank: $${gameState.bank}`)
           gameState.addToInventory(item)
-          // Update health/happiness for wants
-          if (gameState.isWant(item.key)) {
-            gameState.updateStat("character", "happiness", 10)
-            gameState.updateStat("character", "health", -3)
+          // Update health/happiness based on item type (same as on-list purchase)
+          if (item.key === "dogfood") {
+            gameState.updateStat("pet", "health", 10)
+            gameState.updateStat("pet", "happiness", 5)
+          } else if (gameState.needItems.includes(item.key)) {
+            // Needed item: character health +5
+            gameState.updateStat("character", "health", 5)
+          } else {
+            // Not needed item: happiness +3 only (health not affected)
+            gameState.updateStat("character", "happiness", 3)
           }
           this.characterDisplay.updateBars()
           this.petDisplay.updateBars()
@@ -214,19 +236,20 @@ export class DepartmentStoreScene extends Phaser.Scene {
     gameState.currentDeptList.splice(index, 1)
     this.drawDeptList()
 
-    this.characterDisplay.updateBars()
-    this.petDisplay.updateBars()
-
     // Update health/happiness based on item type
     if (item.key === "dogfood") {
       gameState.updateStat("pet", "health", 10)
       gameState.updateStat("pet", "happiness", 5)
-    } else if (gameState.isNeed(item.key)) {
+    } else if (gameState.needItems.includes(item.key)) {
+      // Needed item: character health +5
       gameState.updateStat("character", "health", 5)
-    } else if (gameState.isWant(item.key)) {
-      gameState.updateStat("character", "happiness", 10)
-      gameState.updateStat("character", "health", -3)  // Unhealthy treats
+    } else {
+      // Not needed item: happiness +3 only (health not affected)
+      gameState.updateStat("character", "happiness", 3)
     }
+
+    this.characterDisplay.updateBars()
+    this.petDisplay.updateBars()
 
     icon.setAlpha(0.4)
     icon.disableInteractive()

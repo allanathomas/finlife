@@ -58,7 +58,7 @@ function showPiggyOptions(scene, updateBalance, onBalanceChange) {
   const dialogueBox = scene.add.rectangle(boxX, boxY, boxWidth, boxHeight, 0x000000, 0.85)
   dialogueBox.setStrokeStyle(2, 0xffffff)
 
-  const dialogueText = scene.add.text(boxX, boxY - 35, "Choose one option", {
+  const dialogueText = scene.add.text(boxX, boxY - 35, "+$2 every week when you invest 🐷", {
     fontSize: "20px",
     color: "#ffffff",
   }).setOrigin(0.5)

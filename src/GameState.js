@@ -30,9 +30,8 @@ export const gameState = {
   // Inventory of purchased items
   inventory: [],
 
-  // Define what counts as NEEDS vs WANTS
+  // Define what counts as needed items (everything else is not needed)
   needItems: ["dogfood", "cheese", "eggs", "apple", "bread", "carrot", "potato", "milk", "bandages", "batteries", "lotion", "pan", "detergent", "sanitizer", "soap", "bulb", "toiletpaper"],
-  wantItems: ["cake", "boba", "icecream", "soda", "ducktopus", "pencilcase", "duck"],
 
   // Track completed tasks/objectives
   completedTasks: [],
@@ -47,10 +46,6 @@ export const gameState = {
 
   isNeed(itemKey) {
     return this.needItems.includes(itemKey)
-  },
-
-  isWant(itemKey) {
-    return this.wantItems.includes(itemKey)
   },
 
   addToInventory(item) {
