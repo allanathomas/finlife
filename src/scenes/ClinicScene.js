@@ -90,15 +90,6 @@ export class ClinicScene extends Phaser.Scene {
   // show dialogue once
   this.showDialogue(messages)
 
-
-    // Add NEXT image button
-    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
-      .setScale(0.22)
-      .setInteractive();
-    nextBtn.on("pointerdown", () => {
-      this.scene.start("HomeScene");
-    });
-
   }
 
 
@@ -136,7 +127,16 @@ showDialogue(messages) {
       this.dialogueBox.destroy()
       this.dialogueText.destroy()
       this.nextButton.destroy()
-      return
+      // Set flag to indicate all dialogue was read
+      gameState.readClinicDialogue = true;
+      // Show NEXT button to go home
+      const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
+        .setScale(0.22)
+        .setInteractive();
+      nextBtn.on("pointerdown", () => {
+        this.scene.start("HomeScene");
+      });
+      return;
     }
 
     this.dialogueText.setText(this.dialogueMessages[this.dialogueIndex])
