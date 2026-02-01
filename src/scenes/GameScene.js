@@ -12,6 +12,7 @@ export class GameScene extends Phaser.Scene {
   preload() {
     this.load.image("townBG", "/pictures/town.png")
     this.load.image("nextButton", "/pictures/NEXT.png")
+    this.load.image("userFr", "/pictures/userFr.png")
   }
 
   init(data) {
@@ -25,15 +26,20 @@ export class GameScene extends Phaser.Scene {
       .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
       .setAlpha(0.7)
 
+    // Add userFr image (top left corner)
+    this.add.image(100, 45, 'userFr')
+      .setOrigin(0.5)
+      .setScale(0.5, 0.3); 
+
     // UI
     this.bankText = this.add.text(20, 20, `Bank: $${gameState.bank}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
     this.weekText = this.add.text(20, 50, `Week: ${gameState.week}`, {
       fontSize: "22px",
-      color: "#ffffff",
+      color: "#000000",
     })
 
     // Salary event
