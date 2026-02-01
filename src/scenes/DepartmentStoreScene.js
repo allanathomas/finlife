@@ -323,17 +323,23 @@ export class DepartmentStoreScene extends Phaser.Scene {
   }
 
   generateDeptList(items) {
-    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 6)
+    return items.slice().sort(() => 0.5 - Math.random()).slice(0, 4)
   }
 
   drawDeptList() {
     if (this.deptTexts) {
       this.deptTexts.forEach(t => t.destroy())
     }
+    if (this.deptIcons) {
+      this.deptIcons.forEach(i => i.destroy())
+    }
     this.deptTexts = []
+    this.deptIcons = []
 
     const x = this.cameras.main.width - 20
     const y = 20
+    const iconSize = 35
+    const iconOffset = 220 // Space to the left of the text
 
     this.deptTexts.push(
       this.add.text(x, y, "Department List", {
@@ -343,18 +349,26 @@ export class DepartmentStoreScene extends Phaser.Scene {
       }).setOrigin(1, 0)
     )
 
+    const lineSpacing = 40;
     gameState.currentDeptList.forEach((item, index) => {
       // Use gameState helper to check need vs want
       const color = gameState.isNeed(item.key) ? "#ff0000" : "#b000ff"
-
+      // Draw icon to the left of the text, move up by 12px
+      const iconY = y + 40 + index * lineSpacing + iconSize / 2 - 12;
+      const iconX = x - iconOffset;
+      this.deptIcons.push(
+        this.add.image(iconX, iconY, item.key)
+          .setOrigin(1, 0.5)
+          .setDisplaySize(iconSize, iconSize)
+      );
       this.deptTexts.push(
         this.add.text(
           x,
-          y + 40 + index * 30,
+          y + 40 + index * lineSpacing,
           `${item.name} - $${item.price}`,
           { fontSize: "20px", color, backgroundColor: "#ffffff" }
         ).setOrigin(1, 0)
-      )
-    })
+      );
+    });
   }
 }

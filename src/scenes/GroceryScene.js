@@ -359,7 +359,7 @@ export class GroceryScene extends Phaser.Scene {
     const x = this.cameras.main.width - 20
     const y = 20
     const iconSize = 32
-    const iconOffset = 150 // Increased offset for more space to the left
+    const iconOffset = 200 // Increased offset for more space to the left
 
     this.groceryTexts.push(
       this.add.text(x, y, "Grocery List", {
