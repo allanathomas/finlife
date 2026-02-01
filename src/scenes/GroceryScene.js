@@ -122,10 +122,16 @@ export class GroceryScene extends Phaser.Scene {
         return;
       }
       const left = gameState.bank - item.price;
-      this.showConfirmDialogue(
-        [`${item.name} is not on your grocery list.`,
-         `Do you really want to buy it for $${item.price}?`,
-         `You will have $${left} left in your bank.`],
+        this.showConfirmDialogue(
+          [
+            `${item.name} is not on your grocery list.`,
+            `If you buy this, you will spend $${item.price}.`,
+            `You will have $${left} left in your bank.`,
+            "",
+            `Remember: If you use your money for treats or toys now, you might not have enough or things you really need later,`,
+            `like food for you or your pet!`,
+            `Do you still want to buy this?`
+          ],
         () => {
           // Yes: proceed with purchase
           gameState.bank -= item.price;
@@ -182,12 +188,12 @@ export class GroceryScene extends Phaser.Scene {
     this.dialogueIndex = 0;
 
     const centerX = this.cameras.main.centerX;
-    const centerY = this.cameras.main.height - 180;
+    const centerY = this.cameras.main.height - 200;
 
     this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
     this.dialogueBox.setStrokeStyle(2, 0xffffff);
 
-    this.dialogueText = this.add.text(centerX - 430, centerY - 70, "", {
+    this.dialogueText = this.add.text(centerX - 430, centerY - 100, "", {
       fontSize: "24px",
       color: "#ffffff",
       wordWrap: { width: 860 },

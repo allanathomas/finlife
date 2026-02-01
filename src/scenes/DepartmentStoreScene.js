@@ -7,7 +7,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("shelf", "resources/depshelf.png")
+    this.load.image("shelf", "resources/depshelf.avif")
 
     this.load.spritesheet("girl", "resources/girlchar.png", {
       frameWidth: 32,
@@ -36,7 +36,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     const { centerX, centerY } = this.cameras.main
 
     // Background
-    const bg = this.add.image(centerX, centerY, "shelf2")
+    const bg = this.add.image(centerX, centerY, "shelf")
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
     // BANK TEXT (always visible)
@@ -99,11 +99,13 @@ export class DepartmentStoreScene extends Phaser.Scene {
       })
     })
 
-    this.add.text(400, 400, "Next", { fontSize: "24px", color: "#fff" })
-      .setInteractive()
-      .on("pointerdown", () => {
-      this.scene.start("DepartmentStoreScene")
-    })
+    // Add NEXT image button
+    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
+      .setScale(0.22)
+      .setInteractive();
+    nextBtn.on("pointerdown", () => {
+      this.scene.start("DepartmentStoreScene");
+    });
   }
 
   // BUY ITEM FUNCTION
@@ -120,7 +122,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     gameState.addToInventory(item)
 
     gameState.currentDeptList.splice(index, 1)
-    this.drawGroceryList()
+    this.drawDeptList()
 
     // Update health/happiness based on item type
     if (item.key === "dogfood") {
