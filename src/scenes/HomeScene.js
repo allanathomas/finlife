@@ -37,19 +37,49 @@ preload() {
       fontSize: "22px",
       color: "#000000",
     })
-
-    this.showDialogue([
+const messages = [
       `Welcome Home!`,
       `It is now week ${gameState.week}, and you have $${gameState.bank}.`,
-    ])
+      ]
+    
+    let next = 1
 
+    // character check
+    if (gameState.character.health <= 0) {
+      next -= 1
+      messages.push("Your health is at 0!")
+      messages.push("Game Over!")
+    } if (gameState.character.happiness <= 0) {
+      next -= 1
+      messages.push("Your happiness is at 0!")
+      messages.push("Game Over!")
+    } if (gameState.pet.happiness <= 0 || gameState.pet.health <= 0) {
+      next -= 1
+      messages.push("Your pet was not taken care of!")
+      messages.push("Game Over!")
+    }
+
+  // show dialogue once
+  this.showDialogue(messages)
+
+    if (next < 1){
     // Add NEXT image button
+    const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
+      .setScale(0.22)
+      .setInteractive();
+      gameState.reset()
+    nextBtn.on("pointerdown", () => {
+      this.scene.start("GameScene");
+    });
+    } else {
+      // Add NEXT image button
     const nextBtn = this.add.image(this.cameras.main.width - 80, this.cameras.main.height - 60, "nextButton")
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
       this.scene.start("GroceryScene");
     });
+    }
 
   }
 
