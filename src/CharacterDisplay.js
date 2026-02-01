@@ -24,11 +24,7 @@ export function createCharacterDisplay(scene, options) {
     .setOrigin(0.5, 0.5)
     .setDepth(depth)
 
-<<<<<<< HEAD
-  const barWidth = width * 0.7
-=======
   const barWidth = width * 0.56 // 20% shorter than original (0.7 * 0.8 = 0.56)
->>>>>>> main
   const barHeight = 16
   const barLeft = x - barWidth / 2
   const barAreaTop = y - height / 2 - 70
@@ -85,8 +81,4 @@ export function createCharacterDisplay(scene, options) {
       happinessBarFill.destroy()
     },
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> main

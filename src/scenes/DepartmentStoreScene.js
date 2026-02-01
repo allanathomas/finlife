@@ -22,7 +22,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     })
-        this.load.spritesheet("dog", "resources/dog.png", {
+    this.load.spritesheet("dog", "resources/dog.png", {
       frameWidth: 32,
       frameHeight: 32,
     })
@@ -49,7 +49,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height)
 
     // Add userFr image (top left corner)
-        this.add.image(100, 45, 'userFr')
+    this.add.image(100, 45, 'userFr')
           .setOrigin(0.5)
           .setScale(0.5, 0.3);
 
@@ -95,14 +95,32 @@ export class DepartmentStoreScene extends Phaser.Scene {
     // Position character below the list
     const listEndY = 20 + 40 + (gameState.currentDeptList.length * 30)
     const characterY = listEndY + 100 + (this.cameras.main.height / 4) // more padding to move character lower
+    const characterX = this.cameras.main.width - 20 - (this.cameras.main.width / 6) // Aligned with list on right side
+    const charScale = 0.9 // Scale factor for character size
+    const baseCharacterWidth = this.cameras.main.width / 3
+    const baseCharacterHeight = this.cameras.main.height / 2
+    const characterWidth = baseCharacterWidth * charScale
+    const characterHeight = baseCharacterHeight * charScale
+    
     this.characterDisplay = createCharacterDisplay(this, {
-      x: this.cameras.main.width - 20 - (this.cameras.main.width / 6), // Aligned with list on right side
+      x: characterX,
       y: characterY,
-      width: this.cameras.main.width / 3,
-      height: this.cameras.main.height / 2,
+      width: characterWidth,
+      height: characterHeight,
       depth: 20
     })
 
+    // Add pet display next to the character (to the right), proportional size
+    const petScale = 0.4 // Scale factor to maintain proportions
+    const petX = characterX + 170// 20 pixels to the right of character
+    const petY = characterY + 130 // 50 pixels lower than character
+    this.petDisplay = createPetDisplay(this, {
+      x: petX,
+      y: petY,
+      width: characterWidth * petScale,
+      height: characterHeight * petScale,
+      depth: 20
+    })
     // Shelf layout
     const startX = 200
     const startY = 140
@@ -161,13 +179,15 @@ export class DepartmentStoreScene extends Phaser.Scene {
       const left = gameState.bank - item.price;
       this.showConfirmDialogue(
         [
-          `${item.name} is not on your department list.`,
-          `If you buy this, you will spend $${item.price}.`,
-          `You will have $${left} left in your bank.`,
-          '',
-          `Remember: If you use your money for treats or toys now, you might not have enough for things you really need later,`,
-          `like supplies for you or your pet!`,
-          `Do you still want to buy this?`
+          "Oops! This item isn't on your list.",
+          "",
+          `It costs $${item.price}.`,
+          "You'll have less money after buying it.",
+          "",
+          "If you buy this item now, you might not have enough money later",
+          "for important things — like food for you or your pet 🐶",
+          "",
+          "Do you want to buy it anyway?"
         ],
         () => {
           gameState.bank -= item.price;
@@ -179,6 +199,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
             gameState.updateStat("character", "health", -3);
           }
           this.characterDisplay.updateBars();
+          this.petDisplay.updateBars();
           icon.setAlpha(0.4);
           icon.disableInteractive();
         }
@@ -201,6 +222,7 @@ export class DepartmentStoreScene extends Phaser.Scene {
     this.drawDeptList();
 
     this.characterDisplay.updateBars();
+    this.petDisplay.updateBars();
 
     // Update health/happiness based on item type
     if (item.key === "duck" || item.key == "ducktopus") {
@@ -216,53 +238,57 @@ export class DepartmentStoreScene extends Phaser.Scene {
     icon.disableInteractive();
   }
   // Confirmation dialogue with Yes/No (copied and adapted from GroceryScene)
-  showConfirmDialogue(messages, onYes) {
-    this.confirmDialogueOpen = true;
-    this.dialogueMessages = messages;
-    this.dialogueIndex = 0;
+    showConfirmDialogue(messages, onYes) {
+    this.confirmDialogueOpen = true
+    this.dialogueMessages = messages
+    this.dialogueIndex = 0
 
-    const centerX = this.cameras.main.centerX;
-    const centerY = this.cameras.main.height - 200;
+    const centerX = this.cameras.main.centerX
+    const centerY = this.cameras.main.height - 200
+    const boxHeight = 320 // Increased height for better message display
 
-    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, 220, 0x000000, 0.8);
-    this.dialogueBox.setStrokeStyle(2, 0xffffff);
+    this.dialogueBox = this.add.rectangle(centerX, centerY, 900, boxHeight, 0x000000, 0.8)
+    this.dialogueBox.setStrokeStyle(2, 0xffffff)
 
     this.dialogueText = this.add.text(centerX - 430, centerY - 100, "", {
       fontSize: "24px",
       color: "#ffffff",
       wordWrap: { width: 860 },
-    });
+    })
 
-    // Yes/No buttons
-    this.yesButton = this.add.text(centerX + 200, centerY + 60, "Yes", {
+    // Yes/No buttons positioned at bottom right corner of the box
+    const boxBottom = centerY + (boxHeight / 2)
+    const boxRight = centerX + 400 // Positioned near the right edge with padding
+    this.yesButton = this.add.text(boxRight - 60, boxBottom - 30, "Yes", {
       fontSize: "24px",
       color: "#fff",
       backgroundColor: "#228B22"
-    }).setInteractive();
-    this.noButton = this.add.text(centerX + 300, centerY + 60, "No", {
+    }).setInteractive()
+    this.noButton = this.add.text(boxRight + 20, boxBottom - 30, "No", {
       fontSize: "24px",
       color: "#fff",
       backgroundColor: "#B22222"
-    }).setInteractive();
+    }).setInteractive()
 
     this.yesButton.on("pointerdown", () => {
-      this.dialogueBox.destroy();
-      this.dialogueText.destroy();
-      this.yesButton.destroy();
-      this.noButton.destroy();
-      this.confirmDialogueOpen = false;
-      onYes();
-    });
+      this.dialogueBox.destroy()
+      this.dialogueText.destroy()
+      this.yesButton.destroy()
+      this.noButton.destroy()
+      this.confirmDialogueOpen = false
+      onYes()
+    })
     this.noButton.on("pointerdown", () => {
-      this.dialogueBox.destroy();
-      this.dialogueText.destroy();
-      this.yesButton.destroy();
-      this.noButton.destroy();
-      this.confirmDialogueOpen = false;
-    });
+      this.dialogueBox.destroy()
+      this.dialogueText.destroy()
+      this.yesButton.destroy()
+      this.noButton.destroy()
+      this.confirmDialogueOpen = false
+    })
 
-    this.dialogueText.setText(this.dialogueMessages.join("\n"));
+    this.dialogueText.setText(this.dialogueMessages.join("\n"))
   }
+
 
   // Simple dialogue popup for errors
   showDialogue(messages) {

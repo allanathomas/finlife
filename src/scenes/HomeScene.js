@@ -81,11 +81,7 @@ const messages = [
       .setScale(0.22)
       .setInteractive();
     nextBtn.on("pointerdown", () => {
-<<<<<<< HEAD
       this.scene.start("TownScene");
-=======
-      this.scene.start("GroceryScene");
->>>>>>> main
     });
     }
 
@@ -132,5 +128,4 @@ const messages = [
     this.dialogueIndex++
   }
 }
-
 
